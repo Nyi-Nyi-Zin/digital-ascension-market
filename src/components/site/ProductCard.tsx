@@ -16,7 +16,13 @@ const ICONS: Record<string, LucideIcon> = {
   Play,
 };
 
-export function CategoryIcon({ name, className }: { name?: string; className?: string }) {
+export function CategoryIcon({
+  name,
+  className,
+}: {
+  name?: string | undefined;
+  className?: string | undefined;
+}) {
   const Icon = ICONS[name ?? "Sparkles"] ?? Sparkles;
   return <Icon className={className} />;
 }
@@ -27,7 +33,7 @@ export function ProductCard({
   stock,
 }: {
   product: Product;
-  icon?: string;
+  icon?: string | undefined;
   stock: number;
 }) {
   const inStock = stock > 0;
