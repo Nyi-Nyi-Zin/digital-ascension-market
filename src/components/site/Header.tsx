@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Cloud, LayoutDashboard, LogOut, Menu, ShoppingBag, WalletCards, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, ShoppingBag, WalletCards, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,8 +18,8 @@ const NAV = [
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <span className="gradient-brand flex size-9 items-center justify-center rounded-full shadow-glow">
-        <Cloud className="size-5 text-primary-foreground" strokeWidth={2.4} />
+      <span className="flex size-9 items-center justify-center overflow-hidden rounded-xl border border-white/20 bg-white shadow-glow">
+        <img src="/assets/cloud-nine-logo.png" alt="" className="size-full object-cover" />
       </span>
       <span className="text-lg font-bold tracking-tight">
         Cloud <span className="gradient-text">Nine</span>

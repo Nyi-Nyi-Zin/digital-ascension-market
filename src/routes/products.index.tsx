@@ -39,7 +39,10 @@ function ProductsPage() {
   const { t } = useI18n();
   const [active, setActive] = useState("all");
 
-  const visible = active === "all" ? products : products.filter((p) => p.category_id === active);
+  const visible = products.filter(
+    (product) =>
+      (active === "all" || product.category_id === active) && (stock[product.id] ?? 0) > 0,
+  );
 
   return (
     <SiteLayout>
@@ -80,6 +83,9 @@ function ProductsPage() {
               key={product.id}
               product={product}
               icon={categories.find((c) => c.id === product.category_id)?.icon}
+              categoryName={
+                categories.find((category) => category.id === product.category_id)?.name
+              }
               stock={stock[product.id] ?? 0}
             />
           ))}

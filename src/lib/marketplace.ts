@@ -27,51 +27,8 @@ const MOCK_CATEGORIES: Category[] = [
   { id: "mock-streaming", name: "Streaming", slug: "streaming", icon: "Play" },
 ];
 
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: "mock-ai-workspace",
-    name: "AI Pro Workspace",
-    description: "Demo catalogue item for the Cloud Nine AI subscriptions collection.",
-    category_id: "mock-ai",
-    price: 12,
-    image_url: null,
-    what_you_get: "Demo product preview\nNo real credentials included\nPreview only",
-    is_active: true,
-    created_at: "2026-01-01T00:00:00.000Z",
-    is_mock: true,
-  },
-  {
-    id: "mock-design-studio",
-    name: "Design Studio Pro",
-    description: "Demo catalogue item for the Cloud Nine design tools collection.",
-    category_id: "mock-design",
-    price: 8,
-    image_url: null,
-    what_you_get: "Demo product preview\nNo real credentials included\nPreview only",
-    is_active: true,
-    created_at: "2026-01-02T00:00:00.000Z",
-    is_mock: true,
-  },
-  {
-    id: "mock-streaming-plus",
-    name: "Streaming Plus",
-    description: "Demo catalogue item for the Cloud Nine streaming collection.",
-    category_id: "mock-streaming",
-    price: 10,
-    image_url: null,
-    what_you_get: "Demo product preview\nNo real credentials included\nPreview only",
-    is_active: true,
-    created_at: "2026-01-03T00:00:00.000Z",
-    is_mock: true,
-  },
-];
-
 function withMockCategories(data: Category[] | null) {
   return data && data.length > 0 ? (data as Category[]) : MOCK_CATEGORIES;
-}
-
-function withMockProducts(data: Product[] | null) {
-  return data && data.length > 0 ? (data as Product[]) : MOCK_PRODUCTS;
 }
 
 export type Order = {
@@ -147,9 +104,9 @@ export const productsQuery = queryOptions({
       .order("created_at", { ascending: true });
     if (error) {
       console.error("Failed to load products:", error);
-      return MOCK_PRODUCTS;
+      return [];
     }
-    return withMockProducts(data as Product[]);
+    return (data ?? []) as Product[];
   },
 });
 
@@ -180,9 +137,9 @@ export function productQuery(id: string) {
         .maybeSingle();
       if (error) {
         console.error("Failed to load product:", error);
-        return MOCK_PRODUCTS.find((product) => product.id === id) ?? null;
+        return null;
       }
-      return (data as Product | null) ?? MOCK_PRODUCTS.find((product) => product.id === id) ?? null;
+      return (data as Product | null) ?? null;
     },
   });
 }

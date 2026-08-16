@@ -1,8 +1,15 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { CreditCard, PenTool, Play, Sparkles, type LucideIcon } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Flame,
+  LockKeyhole,
+  PenTool,
+  Play,
+  Sparkles,
+  CreditCard,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice, type Product } from "@/lib/marketplace";
-import { useI18n } from "@/lib/i18n";
 
 const ICONS: Record<string, LucideIcon> = {
   Sparkles,
@@ -25,24 +32,26 @@ export function CategoryIcon({
 export function ProductCard({
   product,
   icon,
+  categoryName,
   stock,
 }: {
   product: Product;
   icon?: string | undefined;
+  categoryName?: string | undefined;
   stock: number;
 }) {
-  const isMock = product.is_mock === true;
-  const inStock = !isMock && stock > 0;
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const inStock = stock > 0;
 
   function openDetail() {
     navigate({ to: "/products/$id", params: { id: product.id } });
   }
 
+  if (!inStock) return null;
+
   return (
     <article
-      className="glass lift flex cursor-pointer flex-col rounded-3xl p-3 sm:p-6"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[1.55rem] border border-cyan-300/15 bg-[#07131c] shadow-[0_14px_30px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:shadow-[0_18px_42px_rgba(0,220,210,0.16)]"
       onClick={openDetail}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -53,48 +62,53 @@ export function ProductCard({
       role="link"
       tabIndex={0}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="relative aspect-[1.28] overflow-hidden bg-[#0b1d2a]">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
             loading="lazy"
-            className="size-14 rounded-2xl object-cover"
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <span className="gradient-brand flex size-14 items-center justify-center rounded-full shadow-glow">
-            <CategoryIcon name={icon} className="size-6 text-primary-foreground" />
-          </span>
+          <div className="flex size-full items-center justify-center bg-[radial-gradient(circle_at_50%_35%,rgba(47,214,207,0.22),transparent_52%),linear-gradient(145deg,#102938,#050b12)]">
+            <CategoryIcon name={icon} className="size-20 text-cyan-200/80" />
+          </div>
         )}
-        <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-            isMock
-              ? "border-primary/30 bg-primary/10 text-primary"
-              : inStock
-                ? "border-success/30 bg-success/15 text-success"
-                : "border-border bg-muted text-muted-foreground"
-          }`}
-        >
-          {isMock ? t("demoPreview") : inStock ? `${stock} in stock` : "Sold out"}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07131c] via-transparent to-transparent" />
+        <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full border border-cyan-300/50 bg-[#082a31]/85 px-3 py-1.5 text-[10px] font-bold tracking-[0.22em] text-cyan-200 uppercase shadow-[0_0_16px_rgba(34,211,238,0.15)]">
+          <Flame className="size-3" /> Top
         </span>
       </div>
 
-      <h3 className="mt-4 text-sm font-semibold sm:mt-5 sm:text-base">{product.name}</h3>
-      <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
-
-      <div className="mt-4 flex items-center justify-between gap-2 sm:mt-6 sm:gap-3">
-        <span className="text-base font-bold sm:text-xl">{formatPrice(product.price)}</span>
-        {isMock ? (
-          <Button variant="secondary" size="sm" disabled>
-            {t("previewOnly")}
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <p className="truncate text-[10px] font-semibold tracking-[0.24em] text-cyan-200/65 uppercase">
+          {categoryName ?? "Digital product"}
+        </p>
+        <h3 className="mt-2 line-clamp-2 min-h-11 text-sm leading-snug font-bold text-slate-100 sm:text-base">
+          {product.name}
+        </h3>
+        <div className="mt-4 flex items-end justify-between gap-2 border-t border-white/10 pt-3">
+          <div>
+            <p className="text-lg font-extrabold text-white sm:text-xl">
+              {formatPrice(product.price)}
+            </p>
+            <p className="mt-0.5 text-[10px] tracking-[0.16em] text-slate-400 uppercase">
+              {Number(product.price).toFixed(2)} units required
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            className="shrink-0 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 text-[10px] font-bold tracking-[0.16em] text-cyan-200 uppercase hover:bg-cyan-300/20"
+            onClick={(event) => {
+              event.stopPropagation();
+              openDetail();
+            }}
+          >
+            <LockKeyhole className="size-3.5" /> Unlock
           </Button>
-        ) : (
-          <Button asChild variant={inStock ? "hero" : "secondary"} size="sm" disabled={!inStock}>
-            <Link to="/products/$id" params={{ id: product.id }}>
-              {inStock ? "Buy Now" : "View"}
-            </Link>
-          </Button>
-        )}
+        </div>
       </div>
     </article>
   );

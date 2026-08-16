@@ -89,7 +89,10 @@ function Index() {
   const { t } = useI18n();
   const [active, setActive] = useState<string>("all");
 
-  const visible = active === "all" ? products : products.filter((p) => p.category_id === active);
+  const visible = products.filter(
+    (product) =>
+      (active === "all" || product.category_id === active) && (stock[product.id] ?? 0) > 0,
+  );
   const iconFor = (categoryId: string | null) => categories.find((c) => c.id === categoryId)?.icon;
 
   return (
@@ -137,7 +140,7 @@ function Index() {
       <section id="products" className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold sm:text-3xl">{t("featuredProducts")}</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">{t("allProducts")}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{t("liveStock")}</p>
           </div>
           <Link
@@ -176,11 +179,14 @@ function Index() {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
-          {visible.slice(0, 6).map((product) => (
+          {visible.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               icon={iconFor(product.category_id)}
+              categoryName={
+                categories.find((category) => category.id === product.category_id)?.name
+              }
               stock={stock[product.id] ?? 0}
             />
           ))}

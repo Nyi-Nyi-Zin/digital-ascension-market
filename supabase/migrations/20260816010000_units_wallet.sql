@@ -195,7 +195,7 @@ begin
   for update;
 
   if current_balance < selected_product.price then
-    raise exception 'Insufficient units. Add more units before purchasing this product.';
+    raise exception 'Insufficient balance. Add more units before purchasing this product.';
   end if;
 
   select * into selected_stock

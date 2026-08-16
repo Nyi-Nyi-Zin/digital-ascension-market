@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, Package, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
@@ -12,6 +12,8 @@ import {
   whatYouGetList,
 } from "@/lib/marketplace";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { walletBalanceQuery } from "@/lib/wallet";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$id")({
@@ -68,14 +70,18 @@ export const Route = createFileRoute("/products/$id")({
 
 function ProductDetail() {
   const { id } = Route.useParams();
+  const { user } = useAuth();
   const { t } = useI18n();
   const { data: product } = useSuspenseQuery(productQuery(id));
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data: stock } = useSuspenseQuery(stockCountsQuery);
+  const { data: wallet, isLoading: walletLoading } = useQuery(walletBalanceQuery(user?.id));
 
   if (!product) return null;
   const available = stock[product.id] ?? 0;
   const category = categories.find((c) => c.id === product.category_id);
+  const balance = Number(wallet?.balance ?? 0);
+  const canAfford = balance >= Number(product.price);
 
   return (
     <SiteLayout>
@@ -133,6 +139,15 @@ function ProductDetail() {
           <aside className="glass h-fit rounded-3xl p-8 lg:sticky lg:top-24">
             <p className="text-sm text-muted-foreground">Price</p>
             <p className="mt-1 text-4xl font-extrabold">{formatPrice(product.price)}</p>
+            <p className="mt-2 text-xs tracking-[0.16em] text-muted-foreground uppercase">
+              {Number(product.price).toFixed(2)} units required
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Balance: {walletLoading ? "Checking…" : `${balance.toFixed(2)} units`}
+            </p>
+            {!walletLoading && !canAfford ? (
+              <p className="mt-2 text-sm font-semibold text-amber-600">Insufficient balance</p>
+            ) : null}
 
             <div className="mt-6 flex items-center gap-2 text-sm">
               <Package className="size-4 text-primary" />
@@ -151,11 +166,15 @@ function ProductDetail() {
               disabled={available === 0}
             >
               {available > 0 ? (
-                <Link to="/checkout/$productId" params={{ productId: product.id }}>
-                  Buy Now
-                </Link>
+                canAfford ? (
+                  <Link to="/checkout/$productId" params={{ productId: product.id }}>
+                    Buy Now
+                  </Link>
+                ) : (
+                  <Link to="/units">Buy units</Link>
+                )
               ) : (
-                <span>Sold out</span>
+                <span>Unavailable</span>
               )}
             </Button>
 

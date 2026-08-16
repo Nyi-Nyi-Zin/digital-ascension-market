@@ -111,10 +111,10 @@ function CheckoutPage() {
 
             {!canAfford ? (
               <div className="mt-7 rounded-2xl border border-primary/20 bg-lavender-light/70 p-5">
-                <p className="font-semibold">Not enough units for this product.</p>
+                <p className="font-semibold">Insufficient balance</p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Add at least {Math.max(total - balance, 0).toFixed(2)} more units before checking
-                  out.
+                  You need {Math.max(total - balance, 0).toFixed(2)} more units before you can buy
+                  this product.
                 </p>
                 <Button asChild variant="soft" className="mt-4">
                   <Link to="/units">Buy units</Link>
@@ -166,7 +166,11 @@ function CheckoutPage() {
               disabled={busy || available === 0 || !canAfford}
             >
               {busy ? <Loader2 className="animate-spin" /> : null}
-              {available === 0 ? "Sold out" : canAfford ? "Confirm with units" : "Buy units first"}
+              {available === 0
+                ? "Unavailable"
+                : canAfford
+                  ? "Confirm with units"
+                  : "Insufficient balance"}
             </Button>
             <p className="mt-3 text-center text-xs text-subtle">
               Purchases are secured by an atomic server-side balance and stock check.
