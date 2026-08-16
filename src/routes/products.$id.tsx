@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, Package, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,20 +12,12 @@ import {
   stockCountsQuery,
   whatYouGetList,
 } from "@/lib/marketplace";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { walletBalanceQuery } from "@/lib/wallet";
 import { useI18n } from "@/lib/i18n";
 import { absoluteUrl, productJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/products/$id")({
-  ssr: false,
-  beforeLoad: async ({ location }) => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
-      throw redirect({ to: "/auth", search: { redirect: location.href } });
-    }
-  },
   loader: async ({ context, params }) => {
     const product = await context.queryClient.ensureQueryData(productQuery(params.id));
     if (!product) throw notFound();
@@ -167,7 +159,9 @@ function ProductDetail() {
               <p className="mt-2 text-sm font-semibold text-amber-600">Insufficient balance</p>
             ) : null}
             <p className="mt-2 text-xs text-muted-foreground">
-              Temporary mode: no units are deducted and no order is completed.
+              {user
+                ? "Sign in is active. Purchase attempts still use the protected checkout flow."
+                : "Sign in is required before purchase. Product details are public to browse."}
             </p>
 
             <div className="mt-6 flex items-center gap-2 text-sm">
@@ -178,9 +172,15 @@ function ProductDetail() {
             </div>
 
             <Button asChild variant="hero" size="lg" className="mt-6 w-full">
-              <Link to="/checkout/$productId" params={{ productId: product.id }}>
-                Try purchase
-              </Link>
+              {user ? (
+                <Link to="/checkout/$productId" params={{ productId: product.id }}>
+                  Try purchase
+                </Link>
+              ) : (
+                <Link to="/auth" search={{ redirect: `/products/${product.id}` }}>
+                  Sign in to purchase
+                </Link>
+              )}
             </Button>
 
             <ul className="mt-6 space-y-3 text-xs text-muted-foreground">
