@@ -75,7 +75,10 @@ export const categoriesQuery = queryOptions({
   queryKey: ["categories"],
   queryFn: async (): Promise<Category[]> => {
     const { data, error } = await supabase.from("categories").select("*").order("name");
-    if (error) throw error;
+    if (error) {
+      console.error("Failed to load categories:", error);
+      return [];
+    }
     return data as Category[];
   },
 });
@@ -88,7 +91,10 @@ export const productsQuery = queryOptions({
       .select("*")
       .eq("is_active", true)
       .order("created_at", { ascending: true });
-    if (error) throw error;
+    if (error) {
+      console.error("Failed to load products:", error);
+      return [];
+    }
     return data as Product[];
   },
 });
@@ -97,7 +103,10 @@ export const stockCountsQuery = queryOptions({
   queryKey: ["stock-counts"],
   queryFn: async (): Promise<Record<string, number>> => {
     const { data, error } = await supabase.rpc("get_stock_counts");
-    if (error) throw error;
+    if (error) {
+      console.error("Failed to load stock counts:", error);
+      return {};
+    }
     const map: Record<string, number> = {};
     for (const row of (data ?? []) as { product_id: string; available_count: number }[]) {
       map[row.product_id] = Number(row.available_count);
@@ -115,7 +124,10 @@ export function productQuery(id: string) {
         .select("*")
         .eq("id", id)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        console.error("Failed to load product:", error);
+        return null;
+      }
       return data as Product | null;
     },
   });
