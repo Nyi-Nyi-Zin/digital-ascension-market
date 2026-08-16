@@ -2,22 +2,25 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { FAQS, FaqAccordion } from "@/components/site/FaqAccordion";
 import { useI18n } from "@/lib/i18n";
+import { absoluteUrl, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Cloud Nine Digital Marketplace" },
+      { title: `FAQ — ${SITE_NAME} Digital Marketplace` },
       {
         name: "description",
         content:
-          "How payment verification, delivery, warranties and refunds work on Cloud Nine. KBZPay, WavePay and bank transfer supported.",
+          "Learn how payment verification, units, delivery, warranties and refunds work on Cloud Nine. KBZPay, WavePay and local payment support included.",
       },
-      { property: "og:title", content: "FAQ — Cloud Nine Digital Marketplace" },
+      { property: "og:title", content: `FAQ — ${SITE_NAME} Digital Marketplace` },
       {
         property: "og:description",
         content: "Payment, verification, delivery and warranty answers for Cloud Nine buyers.",
       },
+      { property: "og:url", content: absoluteUrl("/faq") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/faq") }],
     scripts: [
       {
         type: "application/ld+json",

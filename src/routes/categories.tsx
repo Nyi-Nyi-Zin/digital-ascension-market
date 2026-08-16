@@ -5,22 +5,21 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { CategoryIcon } from "@/components/site/ProductCard";
 import { categoriesQuery, productsQuery } from "@/lib/marketplace";
 import { useI18n } from "@/lib/i18n";
+import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
     meta: [
-      { title: "Categories — Cloud Nine" },
+      { title: `Categories — ${SITE_NAME}` },
       {
         name: "description",
-        content:
-          "Explore Cloud Nine categories: AI subscriptions, design tools, virtual cards and streaming accounts.",
+        content: `Explore ${SITE_NAME} categories for AI, design, virtual cards and streaming. ${SITE_DESCRIPTION}`,
       },
-      { property: "og:title", content: "Categories — Cloud Nine" },
-      {
-        property: "og:description",
-        content: "AI subscriptions, design tools, virtual cards and streaming accounts.",
-      },
+      { property: "og:title", content: `Categories — ${SITE_NAME}` },
+      { property: "og:description", content: SITE_DESCRIPTION },
+      { property: "og:url", content: absoluteUrl("/categories") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/categories") }],
   }),
   loader: async ({ context }) => {
     await Promise.all([

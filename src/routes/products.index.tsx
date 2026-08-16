@@ -10,22 +10,21 @@ import {
   stockCountsQuery,
 } from "@/lib/marketplace";
 import { useI18n } from "@/lib/i18n";
+import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/products/")({
   head: () => ({
     meta: [
-      { title: "All Products — Cloud Nine" },
+      { title: `All Products — ${SITE_NAME}` },
       {
         name: "description",
-        content:
-          "Browse every Cloud Nine digital product: AI subscriptions, design tools, virtual cards and streaming accounts with live stock counts.",
+        content: `Browse AI subscriptions, design tools, virtual cards and streaming accounts on ${SITE_NAME}. ${SITE_DESCRIPTION}`,
       },
-      { property: "og:title", content: "All Products — Cloud Nine" },
-      {
-        property: "og:description",
-        content: "Every digital product on Cloud Nine, with live stock availability.",
-      },
+      { property: "og:title", content: `All Products — ${SITE_NAME}` },
+      { property: "og:description", content: SITE_DESCRIPTION },
+      { property: "og:url", content: absoluteUrl("/products") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/products") }],
   }),
   loader: async ({ context }) => {
     await Promise.all([

@@ -22,23 +22,18 @@ import {
   stockCountsQuery,
 } from "@/lib/marketplace";
 import { useI18n } from "@/lib/i18n";
+import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cloud Nine — Buy Digital Subscriptions & Accounts" },
-      {
-        name: "description",
-        content:
-          "Cloud Nine is a digital products marketplace for AI subscriptions, design tools, virtual cards and streaming accounts. Pay with KBZPay, WavePay or bank transfer.",
-      },
-      { property: "og:title", content: "Cloud Nine — Buy Digital Subscriptions & Accounts" },
-      {
-        property: "og:description",
-        content:
-          "AI subscriptions, design tools, virtual cards and streaming — delivered instantly.",
-      },
+      { title: `${SITE_NAME} — Buy Digital Subscriptions & Accounts` },
+      { name: "description", content: SITE_DESCRIPTION },
+      { property: "og:title", content: `${SITE_NAME} — Buy Digital Subscriptions & Accounts` },
+      { property: "og:description", content: SITE_DESCRIPTION },
+      { property: "og:url", content: absoluteUrl("/") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }],
   }),
   loader: async ({ context }) => {
     await Promise.all([

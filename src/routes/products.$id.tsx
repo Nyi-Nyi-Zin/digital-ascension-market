@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { walletBalanceQuery } from "@/lib/wallet";
 import { useI18n } from "@/lib/i18n";
+import { absoluteUrl, productJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/products/$id")({
   ssr: false,
@@ -32,7 +33,13 @@ export const Route = createFileRoute("/products/$id")({
       context.queryClient.ensureQueryData(categoriesQuery),
       context.queryClient.ensureQueryData(stockCountsQuery),
     ]);
-    return { name: product.name, description: product.description };
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.image_url,
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -50,6 +57,15 @@ export const Route = createFileRoute("/products/$id")({
         { name: "description", content: loaderData.description.slice(0, 155) },
         { property: "og:title", content: title },
         { property: "og:description", content: loaderData.description.slice(0, 155) },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: absoluteUrl(`/products/${loaderData.id}`) },
+      ],
+      links: [{ rel: "canonical", href: absoluteUrl(`/products/${loaderData.id}`) }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(productJsonLd(loaderData)),
+        },
       ],
     };
   },

@@ -16,6 +16,14 @@ import { LanguageProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/lib/theme";
+import {
+  absoluteUrl,
+  organizationJsonLd,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SOCIAL_IMAGE,
+  websiteJsonLd,
+} from "@/lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -82,21 +90,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cloud Nine — Digital Products Marketplace" },
-      {
-        name: "description",
-        content:
-          "Buy AI subscriptions, design tools, virtual cards and streaming accounts with local payments. Verified fast, delivered instantly.",
-      },
-      { property: "og:title", content: "Cloud Nine — Digital Products Marketplace" },
-      {
-        property: "og:description",
-        content: "Digital subscriptions and accounts, paid locally and delivered instantly.",
-      },
+      { title: `${SITE_NAME} — Digital Products Marketplace in Myanmar` },
+      { name: "description", content: SITE_DESCRIPTION },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
+      { name: "theme-color", content: "#0b1724" },
+      { property: "og:title", content: `${SITE_NAME} — Digital Products Marketplace in Myanmar` },
+      { property: "og:description", content: SITE_DESCRIPTION },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:url", content: absoluteUrl("/") },
+      { property: "og:image", content: SOCIAL_IMAGE },
+      { property: "og:image:alt", content: "Cloud Nine digital products marketplace" },
+      { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: `${SITE_NAME} — Digital Products Marketplace in Myanmar` },
+      { name: "twitter:description", content: SITE_DESCRIPTION },
+      { name: "twitter:image", content: SOCIAL_IMAGE },
     ],
     links: [
+      { rel: "canonical", href: absoluteUrl("/") },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/assets/cloud-nine-logo.png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -118,6 +130,14 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </head>
       <body>
         {children}
