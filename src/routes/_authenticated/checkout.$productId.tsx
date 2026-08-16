@@ -33,7 +33,7 @@ function CheckoutPage() {
   const { data: stock } = useQuery(stockCountsQuery);
 
   const [method, setMethod] = useState<string>(PAYMENT_METHODS[0].value);
-  const [quantity, setQuantity] = useState(1);
+  const quantity = 1;
   const [note, setNote] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -228,28 +228,8 @@ function CheckoutPage() {
             <p className="mt-1 text-xs text-muted-foreground">{available} available in stock</p>
 
             <div className="mt-5 flex items-center justify-between">
-              <Label htmlFor="qty">Quantity</Label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="soft"
-                  size="icon"
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                >
-                  −
-                </Button>
-                <span id="qty" className="w-8 text-center text-sm font-semibold">
-                  {quantity}
-                </span>
-                <Button
-                  variant="soft"
-                  size="icon"
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.min(Math.max(available, 1), q + 1))}
-                >
-                  +
-                </Button>
-              </div>
+              <Label>Quantity</Label>
+              <span className="text-sm font-semibold">1 digital product</span>
             </div>
 
             <dl className="mt-6 space-y-2 border-t border-border pt-5 text-sm">

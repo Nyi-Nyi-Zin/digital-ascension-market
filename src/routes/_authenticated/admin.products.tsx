@@ -248,11 +248,11 @@ function ProductForm({
         const ext = imageFile.name.split(".").pop()?.toLowerCase() ?? "png";
         const path = `products/${crypto.randomUUID()}.${ext}`;
         const { error: uploadError } = await supabase.storage
-          .from("payment-proofs")
-          .upload(path, imageFile, { contentType: imageFile.type });
+          .from("product-images")
+          .upload(path, imageFile, { contentType: imageFile.type, upsert: true });
         if (uploadError) throw uploadError;
         const { data } = await supabase.storage
-          .from("payment-proofs")
+          .from("product-images")
           .createSignedUrl(path, 60 * 60 * 24 * 365);
         imageUrl = data?.signedUrl ?? null;
       }
