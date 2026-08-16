@@ -31,7 +31,7 @@ function UnitsPage() {
   const queryClient = useQueryClient();
   const { data: balance, isLoading: balanceLoading } = useQuery(walletBalanceQuery(user?.id));
   const { data: topups, isLoading: topupsLoading } = useQuery(unitTopupsQuery(user?.id));
-  const [units, setUnits] = useState("10");
+  const [units, setUnits] = useState("");
   const [method, setMethod] = useState<string>(PAYMENT_METHODS[0].value);
   const [note, setNote] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -152,12 +152,23 @@ function UnitsPage() {
                   step="0.01"
                   value={units}
                   onChange={(event) => setUnits(event.target.value)}
+                  placeholder="e.g. 5, 10, 25, or 50 USD"
+                  inputMode="decimal"
                   className="rounded-2xl"
                 />
-                <p className="text-xs text-muted-foreground">
-                  You will receive {validUnits ? Number(parsedUnits).toFixed(2) : "0.00"} units for{" "}
-                  {validUnits ? formatMMK(mmkAmount) : "—"}.
-                </p>
+                <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/10 p-4">
+                  <p className="text-xs font-bold tracking-widest text-subtle uppercase">
+                    Exact amount to transfer
+                  </p>
+                  <p className="mt-1 text-xl font-extrabold text-primary">
+                    {validUnits ? `${formatMMK(mmkAmount)} MMK` : "Enter your USD units above"}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {validUnits
+                      ? `${Number(parsedUnits).toFixed(2)} USD units × ${formatMMK(UNIT_MMK_RATE)} MMK`
+                      : "Examples: 5 USD = 18,315 MMK · 10 USD = 36,630 MMK · 50 USD = 183,150 MMK"}
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -184,7 +195,10 @@ function UnitsPage() {
               <div className="mt-6 rounded-2xl bg-lavender-light/70 p-5 text-sm">
                 <p className="font-semibold">{selected.label}</p>
                 <p className="mt-1 text-muted-foreground">{selected.holder}</p>
-                <p className="mt-1 font-mono font-semibold">{selected.account}</p>
+                <p className="mt-1 font-mono text-lg font-semibold">{selected.account}</p>
+                <p className="mt-3 font-semibold text-primary">
+                  Transfer exactly: {validUnits ? `${formatMMK(mmkAmount)} MMK` : "—"}
+                </p>
                 <p className="mt-2 text-xs text-subtle">{selected.note}</p>
               </div>
               <div className="mt-6 space-y-4">
