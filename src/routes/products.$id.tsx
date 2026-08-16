@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, Package, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,17 @@ import {
   stockCountsQuery,
   whatYouGetList,
 } from "@/lib/marketplace";
+import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$id")({
+  ssr: false,
+  beforeLoad: async ({ location }) => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      throw redirect({ to: "/auth", search: { redirect: location.href } });
+    }
+  },
   loader: async ({ context, params }) => {
     const product = await context.queryClient.ensureQueryData(productQuery(params.id));
     if (!product) throw notFound();
@@ -153,10 +161,11 @@ function ProductDetail() {
 
             <ul className="mt-6 space-y-3 text-xs text-muted-foreground">
               <li className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-primary" /> Manual payment review by our team
+                <ShieldCheck className="size-4 text-primary" /> Pay securely with Cloud Nine units
               </li>
               <li className="flex items-center gap-2">
-                <Zap className="size-4 text-primary" /> Credentials unlock right after approval
+                <Zap className="size-4 text-primary" /> Credentials unlock immediately after
+                checkout
               </li>
             </ul>
           </aside>

@@ -31,7 +31,9 @@ function PurchasesPage() {
     queryFn: async (): Promise<PurchaseRow[]> => {
       const { data, error } = await supabase
         .from("orders")
-        .select("id, quantity, total_price, status, payment_method, rejection_reason, created_at, products(name), stock_items(credential_data)")
+        .select(
+          "id, quantity, total_price, status, payment_method, rejection_reason, created_at, products(name), stock_items(credential_data)",
+        )
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as unknown as PurchaseRow[];
@@ -81,6 +83,8 @@ function OrderCard({ order }: { order: PurchaseRow }) {
   const [reveal, setReveal] = useState(false);
   const [copied, setCopied] = useState(false);
   const method = PAYMENT_METHODS.find((m) => m.value === order.payment_method);
+  const methodLabel =
+    order.payment_method === "units" ? "Cloud Nine units" : (method?.label ?? order.payment_method);
   const credential = order.stock_items?.credential_data;
 
   async function copy() {
@@ -97,8 +101,7 @@ function OrderCard({ order }: { order: PurchaseRow }) {
         <div>
           <h2 className="text-base font-semibold">{order.products?.name ?? "Product"}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            {new Date(order.created_at).toLocaleString()} · {method?.label ?? order.payment_method}{" "}
-            · Qty {order.quantity}
+            {new Date(order.created_at).toLocaleString()} · {methodLabel} · Qty {order.quantity}
           </p>
         </div>
         <div className="text-right">

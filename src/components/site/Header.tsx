@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { Cloud, LayoutDashboard, LogOut, Menu, ShoppingBag, X } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Cloud, LayoutDashboard, LogOut, Menu, ShoppingBag, WalletCards, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/site/LanguageSelector";
+import { walletBalanceQuery } from "@/lib/wallet";
 
 const NAV = [
   { to: "/products", key: "products" },
@@ -30,6 +31,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
 export function Header() {
   const { user, isAdmin } = useAuth();
   const { t } = useI18n();
+  const { data: wallet } = useQuery(walletBalanceQuery(user?.id));
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -72,6 +74,11 @@ export function Header() {
                   </Link>
                 </Button>
               ) : null}
+              <Button asChild variant="outline" size="sm">
+                <Link to="/units">
+                  <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} units
+                </Link>
+              </Button>
               <Button asChild variant="soft" size="sm">
                 <Link to="/purchases">
                   <ShoppingBag /> {t("myPurchases")}
@@ -128,6 +135,11 @@ export function Header() {
                       <Link to="/admin">{t("admin")} dashboard</Link>
                     </Button>
                   ) : null}
+                  <Button asChild variant="outline" onClick={() => setOpen(false)}>
+                    <Link to="/units">
+                      <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} units
+                    </Link>
+                  </Button>
                   <Button asChild variant="soft" onClick={() => setOpen(false)}>
                     <Link to="/purchases">{t("myPurchases")}</Link>
                   </Button>

@@ -51,6 +51,12 @@ function OrderConfirmation() {
   }
 
   const method = PAYMENT_METHODS.find((m) => m.value === data.payment_method);
+  const methodLabel =
+    data.payment_method === "units" ? "Cloud Nine units" : (method?.label ?? data.payment_method);
+  const confirmationMessage =
+    data.status === "delivered"
+      ? "Your units were charged successfully and your digital credentials are ready."
+      : "Thank you! We're checking your payment now.";
 
   return (
     <SiteLayout>
@@ -60,9 +66,7 @@ function OrderConfirmation() {
             <CheckCircle2 className="size-7 text-primary-foreground" />
           </span>
           <h1 className="mt-6 text-2xl font-bold">Order received</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Thank you! We're checking your payment now.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{confirmationMessage}</p>
 
           <div className="mt-6 flex justify-center">
             <StatusBadge status={data.status} />
@@ -85,13 +89,15 @@ function OrderConfirmation() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Paid with</dt>
-              <dd>{method?.label ?? data.payment_method}</dd>
+              <dd>{methodLabel}</dd>
             </div>
           </dl>
 
           <p className="mt-6 inline-flex items-center gap-2 text-xs text-subtle">
             <Clock className="size-4 text-primary" />
-            Admin will verify your payment within 3 hours (max 24 hours).
+            {data.status === "delivered"
+              ? "Your credentials are also available in My Purchases."
+              : "Admin will verify your payment within 3 hours (max 24 hours)."}
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">

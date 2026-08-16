@@ -1,5 +1,13 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { LayoutDashboard, Loader2, Package, Receipt, ShieldAlert, Users } from "lucide-react";
+import {
+  LayoutDashboard,
+  Loader2,
+  Package,
+  Receipt,
+  ShieldAlert,
+  Users,
+  WalletCards,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Header";
 import { useAuth } from "@/lib/auth";
@@ -12,6 +20,7 @@ const LINKS = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/products", label: "Products", icon: Package, exact: false },
   { to: "/admin/orders", label: "Orders", icon: Receipt, exact: false },
+  { to: "/admin/units", label: "Unit top-ups", icon: WalletCards, exact: false },
   { to: "/admin/customers", label: "Customers", icon: Users, exact: false },
 ] as const;
 
