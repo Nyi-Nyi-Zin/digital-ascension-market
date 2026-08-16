@@ -1,11 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowLeft, Loader2, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { formatPrice, productQuery, stockCountsQuery } from "@/lib/marketplace";
 import { walletBalanceQuery } from "@/lib/wallet";
@@ -16,8 +15,6 @@ export const Route = createFileRoute("/_authenticated/checkout/$productId")({
 
 function CheckoutPage() {
   const { productId } = Route.useParams();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { data: product, isLoading } = useQuery(productQuery(productId));
   const { data: stock } = useQuery(stockCountsQuery);
@@ -30,29 +27,15 @@ function CheckoutPage() {
   const canAfford = balance >= total;
 
   async function confirmOrder() {
-    if (!product || !user) return;
+    if (!product) return;
     setBusy(true);
-    try {
-      const { data, error } = await supabase.rpc("purchase_with_units", {
-        p_product_id: product.id,
-      });
-      if (error) throw error;
-      const order = (data as { order_id: string; new_balance: number }[] | null)?.[0];
-      if (!order?.order_id) throw new Error("The purchase did not return an order ID");
-
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["unit-balance", user.id] }),
-        queryClient.invalidateQueries({ queryKey: ["unit-transactions", user.id] }),
-        queryClient.invalidateQueries({ queryKey: ["stock-counts"] }),
-        queryClient.invalidateQueries({ queryKey: ["my-orders"] }),
-      ]);
-      toast.success("Purchase complete. Your credentials are ready.");
-      navigate({ to: "/orders/$orderId", params: { orderId: order.order_id } });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not complete the purchase");
-    } finally {
-      setBusy(false);
-    }
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+    toast.error(
+      available > 0
+        ? "Server error — please try again later. No units were deducted."
+        : "Stock unavailable — no units were deducted.",
+    );
+    setBusy(false);
   }
 
   if (isLoading) {
@@ -91,8 +74,7 @@ function CheckoutPage() {
 
         <h1 className="mt-6 text-3xl font-extrabold">Checkout with units</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your product price is charged from your Cloud Nine unit balance. No separate product
-          payment proof is required.
+          Temporary purchase mode is active. Buy attempts do not deduct units or create orders.
         </p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.85fr]">
@@ -122,10 +104,10 @@ function CheckoutPage() {
               </div>
             ) : (
               <div className="mt-7 rounded-2xl bg-lavender-light/70 p-5 text-sm">
-                <p className="font-semibold">Ready to purchase</p>
+                <p className="font-semibold">Purchase temporarily unavailable</p>
                 <p className="mt-2 text-muted-foreground">
-                  The server will atomically check stock, deduct the units, mark the order
-                  delivered, and attach the credential.
+                  Try the button below to check availability. No units will be deducted while
+                  temporary purchase mode is active.
                 </p>
               </div>
             )}
@@ -163,17 +145,13 @@ function CheckoutPage() {
               size="lg"
               className="mt-6 w-full"
               onClick={confirmOrder}
-              disabled={busy || available === 0 || !canAfford}
+              disabled={busy}
             >
               {busy ? <Loader2 className="animate-spin" /> : null}
-              {available === 0
-                ? "Unavailable"
-                : canAfford
-                  ? "Confirm with units"
-                  : "Insufficient balance"}
+              {busy ? "Checking availability…" : "Try purchase"}
             </Button>
             <p className="mt-3 text-center text-xs text-subtle">
-              Purchases are secured by an atomic server-side balance and stock check.
+              Temporary mode: this action never deducts units or creates a successful order.
             </p>
           </aside>
         </div>

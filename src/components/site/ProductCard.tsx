@@ -42,11 +42,13 @@ export function ProductCard({
   icon,
   categoryName,
   stock,
+  preview = false,
 }: {
   product: Product;
   icon?: string | undefined;
   categoryName?: string | undefined;
   stock: number;
+  preview?: boolean;
 }) {
   const navigate = useNavigate();
   const inStock = stock > 0;
@@ -103,6 +105,9 @@ export function ProductCard({
             </p>
             <p className="mt-0.5 text-[10px] tracking-[0.16em] text-slate-400 uppercase">
               {Number(product.price).toFixed(2)} units required
+            </p>
+            <p className="mt-2 text-[10px] font-semibold tracking-[0.12em] text-cyan-200/70 uppercase">
+              {stock} {preview ? "preview count" : "available"}
             </p>
           </div>
           <Button

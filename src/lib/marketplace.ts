@@ -75,6 +75,13 @@ export function formatPrice(value: number) {
   return `$${Number(value).toFixed(2)}`;
 }
 
+/** Temporary display-only count used while real credential stock is unavailable. */
+export function previewStockCount(productId: string) {
+  let hash = 0;
+  for (const character of productId) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  return 2 + (hash % 8);
+}
+
 export function whatYouGetList(value: string) {
   return value
     .split("\n")

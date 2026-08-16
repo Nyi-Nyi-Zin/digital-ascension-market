@@ -7,6 +7,7 @@ import { CategoryIcon } from "@/components/site/ProductCard";
 import {
   categoriesQuery,
   formatPrice,
+  previewStockCount,
   productQuery,
   stockCountsQuery,
   whatYouGetList,
@@ -78,7 +79,8 @@ function ProductDetail() {
   const { data: wallet, isLoading: walletLoading } = useQuery(walletBalanceQuery(user?.id));
 
   if (!product) return null;
-  const available = stock[product.id] ?? 0;
+  const realAvailable = stock[product.id] ?? 0;
+  const available = realAvailable > 0 ? realAvailable : previewStockCount(product.id);
   const category = categories.find((c) => c.id === product.category_id);
   const balance = Number(wallet?.balance ?? 0);
   const canAfford = balance >= Number(product.price);
@@ -148,34 +150,21 @@ function ProductDetail() {
             {!walletLoading && !canAfford ? (
               <p className="mt-2 text-sm font-semibold text-amber-600">Insufficient balance</p>
             ) : null}
+            <p className="mt-2 text-xs text-muted-foreground">
+              Temporary mode: no units are deducted and no order is completed.
+            </p>
 
             <div className="mt-6 flex items-center gap-2 text-sm">
               <Package className="size-4 text-primary" />
-              {available > 0 ? (
-                <span className="font-semibold text-success">{available} in stock</span>
-              ) : (
-                <span className="font-semibold text-muted-foreground">Currently sold out</span>
-              )}
+              <span className="font-semibold text-muted-foreground">
+                {realAvailable > 0 ? `${available} in stock` : `${available} preview count`}
+              </span>
             </div>
 
-            <Button
-              asChild
-              variant="hero"
-              size="lg"
-              className="mt-6 w-full"
-              disabled={available === 0}
-            >
-              {available > 0 ? (
-                canAfford ? (
-                  <Link to="/checkout/$productId" params={{ productId: product.id }}>
-                    Buy Now
-                  </Link>
-                ) : (
-                  <Link to="/units">Buy units</Link>
-                )
-              ) : (
-                <span>Unavailable</span>
-              )}
+            <Button asChild variant="hero" size="lg" className="mt-6 w-full">
+              <Link to="/checkout/$productId" params={{ productId: product.id }}>
+                Try purchase
+              </Link>
             </Button>
 
             <ul className="mt-6 space-y-3 text-xs text-muted-foreground">

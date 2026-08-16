@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, CategoryIcon } from "@/components/site/ProductCard";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
-import { categoriesQuery, productsQuery, stockCountsQuery } from "@/lib/marketplace";
+import {
+  categoriesQuery,
+  previewStockCount,
+  productsQuery,
+  stockCountsQuery,
+} from "@/lib/marketplace";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
@@ -89,10 +94,7 @@ function Index() {
   const { t } = useI18n();
   const [active, setActive] = useState<string>("all");
 
-  const visible = products.filter(
-    (product) =>
-      (active === "all" || product.category_id === active) && (stock[product.id] ?? 0) > 0,
-  );
+  const visible = products.filter((product) => active === "all" || product.category_id === active);
   const iconFor = (categoryId: string | null) => categories.find((c) => c.id === categoryId)?.icon;
 
   return (
@@ -187,7 +189,8 @@ function Index() {
               categoryName={
                 categories.find((category) => category.id === product.category_id)?.name
               }
-              stock={stock[product.id] ?? 0}
+              stock={stock[product.id] ?? previewStockCount(product.id)}
+              preview={(stock[product.id] ?? 0) === 0}
             />
           ))}
         </div>
