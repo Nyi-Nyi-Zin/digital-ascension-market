@@ -1,11 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  CreditCard,
-  PenTool,
-  Play,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+import { CreditCard, PenTool, Play, Sparkles, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice, type Product } from "@/lib/marketplace";
 
@@ -36,7 +30,8 @@ export function ProductCard({
   icon?: string | undefined;
   stock: number;
 }) {
-  const inStock = stock > 0;
+  const isMock = product.is_mock === true;
+  const inStock = !isMock && stock > 0;
 
   return (
     <article className="glass lift flex flex-col rounded-3xl p-6">
@@ -55,12 +50,14 @@ export function ProductCard({
         )}
         <span
           className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-            inStock
-              ? "border-success/30 bg-success/15 text-success"
-              : "border-border bg-muted text-muted-foreground"
+            isMock
+              ? "border-primary/30 bg-primary/10 text-primary"
+              : inStock
+                ? "border-success/30 bg-success/15 text-success"
+                : "border-border bg-muted text-muted-foreground"
           }`}
         >
-          {inStock ? `${stock} in stock` : "Sold out"}
+          {isMock ? "Demo preview" : inStock ? `${stock} in stock` : "Sold out"}
         </span>
       </div>
 
@@ -69,11 +66,17 @@ export function ProductCard({
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <span className="text-xl font-bold">{formatPrice(product.price)}</span>
-        <Button asChild variant={inStock ? "hero" : "secondary"} size="sm" disabled={!inStock}>
-          <Link to="/products/$id" params={{ id: product.id }}>
-            {inStock ? "Buy Now" : "View"}
-          </Link>
-        </Button>
+        {isMock ? (
+          <Button variant="secondary" size="sm" disabled>
+            Preview only
+          </Button>
+        ) : (
+          <Button asChild variant={inStock ? "hero" : "secondary"} size="sm" disabled={!inStock}>
+            <Link to="/products/$id" params={{ id: product.id }}>
+              {inStock ? "Buy Now" : "View"}
+            </Link>
+          </Button>
+        )}
       </div>
     </article>
   );
