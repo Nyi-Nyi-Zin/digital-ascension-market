@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PREVIEW_CATEGORIES, PREVIEW_PRODUCTS } from "@/lib/previewCatalog";
 
 export type Category = {
   id: string;
@@ -20,16 +21,6 @@ export type Product = {
   created_at: string;
   is_mock?: boolean;
 };
-
-const MOCK_CATEGORIES: Category[] = [
-  { id: "mock-ai", name: "AI Subscriptions", slug: "ai-subscriptions", icon: "Sparkles" },
-  { id: "mock-design", name: "Design Tools", slug: "design-tools", icon: "PenTool" },
-  { id: "mock-streaming", name: "Streaming", slug: "streaming", icon: "Play" },
-];
-
-function withMockCategories(data: Category[] | null) {
-  return data && data.length > 0 ? (data as Category[]) : MOCK_CATEGORIES;
-}
 
 export type Order = {
   id: string;
@@ -95,9 +86,9 @@ export const categoriesQuery = queryOptions({
     const { data, error } = await supabase.from("categories").select("*").order("name");
     if (error) {
       console.error("Failed to load categories:", error);
-      return MOCK_CATEGORIES;
+      return PREVIEW_CATEGORIES;
     }
-    return withMockCategories(data as Category[]);
+    return data && data.length > 0 ? (data as Category[]) : PREVIEW_CATEGORIES;
   },
 });
 
@@ -111,9 +102,9 @@ export const productsQuery = queryOptions({
       .order("created_at", { ascending: true });
     if (error) {
       console.error("Failed to load products:", error);
-      return [];
+      return PREVIEW_PRODUCTS;
     }
-    return (data ?? []) as Product[];
+    return data && data.length > 0 ? (data as Product[]) : PREVIEW_PRODUCTS;
   },
 });
 
@@ -144,9 +135,11 @@ export function productQuery(id: string) {
         .maybeSingle();
       if (error) {
         console.error("Failed to load product:", error);
-        return null;
+        return PREVIEW_PRODUCTS.find((product) => product.id === id) ?? null;
       }
-      return (data as Product | null) ?? null;
+      return (
+        (data as Product | null) ?? PREVIEW_PRODUCTS.find((product) => product.id === id) ?? null
+      );
     },
   });
 }
