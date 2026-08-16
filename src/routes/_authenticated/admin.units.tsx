@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Check, ExternalLink, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,9 @@ function AdminUnitsPage() {
   const queryClient = useQueryClient();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState<Record<string, string>>({});
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">(
+    "pending",
+  );
   const { data, isLoading } = useQuery({
     queryKey: ["admin-unit-topups"],
     queryFn: async (): Promise<(TopupRow & { proofUrl: string | null })[]> => {
@@ -54,7 +57,10 @@ function AdminUnitsPage() {
 
       return await Promise.all(
         rawRows.map(async (row) => {
-          if (!row.payment_screenshot_url) return { ...row, proofUrl: null };
+          if (!row.payment_screenshot_url) {
+            return { ...row, profiles: profileById.get(row.user_id) ?? null, proofUrl: null };
+          }
+
           const { data: signed } = await supabase.storage
             .from("payment-proofs")
             .createSignedUrl(row.payment_screenshot_url, 3600);
@@ -99,6 +105,20 @@ function AdminUnitsPage() {
     }
   }
 
+  const filteredTopups = useMemo(
+    () => (data ?? []).filter((topup) => statusFilter === "all" || topup.status === statusFilter),
+    [data, statusFilter],
+  );
+  const counts = useMemo(
+    () => ({
+      all: data?.length ?? 0,
+      pending: data?.filter((topup) => topup.status === "pending").length ?? 0,
+      approved: data?.filter((topup) => topup.status === "approved").length ?? 0,
+      rejected: data?.filter((topup) => topup.status === "rejected").length ?? 0,
+    }),
+    [data],
+  );
+
   return (
     <div className="mx-auto max-w-5xl">
       <div>
@@ -109,17 +129,34 @@ function AdminUnitsPage() {
         </p>
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-2">
+        {(["pending", "all", "approved", "rejected"] as const).map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            onClick={() => setStatusFilter(filter)}
+            className={`rounded-full border px-4 py-2 text-sm font-semibold capitalize transition-colors ${
+              statusFilter === filter
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-background/60 text-muted-foreground hover:text-primary"
+            }`}
+          >
+            {filter} ({counts[filter]})
+          </button>
+        ))}
+      </div>
+
       {isLoading ? (
         <div className="flex min-h-[30vh] items-center justify-center">
           <Loader2 className="size-6 animate-spin text-primary" />
         </div>
-      ) : (data?.length ?? 0) === 0 ? (
+      ) : filteredTopups.length === 0 ? (
         <div className="glass mt-8 rounded-3xl p-10 text-center text-sm text-muted-foreground">
-          No unit top-ups have been submitted.
+          No {statusFilter === "all" ? "unit top-ups" : `${statusFilter} unit top-ups`} found.
         </div>
       ) : (
         <div className="mt-8 space-y-5">
-          {data?.map((topup) => {
+          {filteredTopups.map((topup) => {
             const pending = topup.status === "pending";
             const customer = topup.profiles?.full_name || topup.profiles?.email || topup.user_id;
             return (
@@ -154,14 +191,21 @@ function AdminUnitsPage() {
                   </div>
                   <div>
                     {topup.proofUrl ? (
-                      <a
-                        href={topup.proofUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-                      >
-                        <ExternalLink className="size-4" /> Open payment proof
-                      </a>
+                      <div className="space-y-3">
+                        <img
+                          src={topup.proofUrl}
+                          alt={`Payment proof from ${customer}`}
+                          className="max-h-64 w-full rounded-2xl border border-border bg-background/60 object-contain"
+                        />
+                        <a
+                          href={topup.proofUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                        >
+                          <ExternalLink className="size-4" /> Open full-size proof
+                        </a>
+                      </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">No payment proof uploaded.</p>
                     )}
