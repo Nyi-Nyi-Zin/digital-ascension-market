@@ -17,6 +17,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
 import { Route as AuthenticatedUnitsRouteImport } from './routes/_authenticated/units'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -65,6 +66,11 @@ const AuthenticatedUnitsRoute = AuthenticatedUnitsRouteImport.update({
   id: '/units',
   path: '/units',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
@@ -119,12 +125,13 @@ const AuthenticatedOrdersOrderIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/faq': typeof FaqRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/units': typeof AuthenticatedUnitsRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -137,11 +144,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/faq': typeof FaqRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/units': typeof AuthenticatedUnitsRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/products/$id': typeof ProductsIdRoute
   '/products': typeof ProductsIndexRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -156,12 +164,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/faq': typeof FaqRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRoute
   '/_authenticated/units': typeof AuthenticatedUnitsRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/purchases'
     | '/units'
+    | '/auth/callback'
     | '/products/$id'
     | '/products/'
     | '/admin/customers'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/purchases'
     | '/units'
+    | '/auth/callback'
     | '/products/$id'
     | '/products'
     | '/admin/customers'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/purchases'
     | '/_authenticated/units'
+    | '/auth/callback'
     | '/products/$id'
     | '/products/'
     | '/_authenticated/admin/customers'
@@ -232,7 +244,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   FaqRoute: typeof FaqRoute
   ProductsIdRoute: typeof ProductsIdRoute
@@ -296,6 +308,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/units'
       preLoaderRoute: typeof AuthenticatedUnitsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/products/': {
       id: '/products/'
@@ -401,10 +420,20 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   FaqRoute: FaqRoute,
   ProductsIdRoute: ProductsIdRoute,

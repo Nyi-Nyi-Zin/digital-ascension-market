@@ -72,7 +72,7 @@ export function ProductCard({
       role="link"
       tabIndex={0}
     >
-      <div className="relative aspect-[1.28] overflow-hidden bg-[#0b1d2a]">
+      <div className="relative aspect-[1.65] overflow-hidden bg-[#0b1d2a] sm:aspect-[1.45]">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -82,38 +82,38 @@ export function ProductCard({
           />
         ) : (
           <div className="flex size-full items-center justify-center bg-[radial-gradient(circle_at_50%_35%,rgba(47,214,207,0.22),transparent_52%),linear-gradient(145deg,#102938,#050b12)]">
-            <CategoryIcon name={icon} className="size-20 text-cyan-200/80" />
+            <CategoryIcon name={icon} className="size-12 text-cyan-200/80 sm:size-20" />
           </div>
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07131c] via-transparent to-transparent" />
-        <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full border border-cyan-300/50 bg-[#082a31]/85 px-3 py-1.5 text-[10px] font-bold tracking-[0.22em] text-cyan-200 uppercase shadow-[0_0_16px_rgba(34,211,238,0.15)]">
+        <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full border border-cyan-300/50 bg-[#082a31]/85 px-2 py-1 text-[9px] font-bold tracking-[0.18em] text-cyan-200 uppercase shadow-[0_0_16px_rgba(34,211,238,0.15)] sm:top-3 sm:left-3 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.22em]">
           <Flame className="size-3" /> Top
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <p className="truncate text-[10px] font-semibold tracking-[0.24em] text-cyan-200/65 uppercase">
+      <div className="flex flex-1 flex-col p-3 sm:p-5">
+        <p className="truncate text-[9px] font-semibold tracking-[0.18em] text-cyan-200/65 uppercase sm:text-[10px] sm:tracking-[0.24em]">
           {categoryName ?? "Digital product"}
         </p>
-        <h3 className="mt-2 line-clamp-2 min-h-11 text-sm leading-snug font-bold text-slate-100 sm:text-base">
+        <h3 className="mt-1 line-clamp-2 min-h-9 text-xs leading-snug font-bold text-slate-100 sm:mt-2 sm:min-h-11 sm:text-base">
           {product.name}
         </h3>
-        <div className="mt-4 flex items-end justify-between gap-2 border-t border-white/10 pt-3">
+        <div className="mt-2 flex items-end justify-between gap-1.5 border-t border-white/10 pt-2 sm:mt-4 sm:gap-2 sm:pt-3">
           <div>
-            <p className="text-lg font-extrabold text-white sm:text-xl">
+            <p className="text-base font-extrabold text-white sm:text-xl">
               {formatPrice(product.price)}
             </p>
-            <p className="mt-0.5 text-[10px] tracking-[0.16em] text-slate-400 uppercase">
+            <p className="mt-0.5 text-[8px] tracking-[0.1em] text-slate-400 uppercase sm:text-[10px] sm:tracking-[0.16em]">
               {Number(product.price).toFixed(2)} units required
             </p>
-            <p className="mt-2 text-[10px] font-semibold tracking-[0.12em] text-cyan-200/70 uppercase">
+            <p className="mt-1 text-[8px] font-semibold tracking-[0.08em] text-cyan-200/70 uppercase sm:mt-2 sm:text-[10px] sm:tracking-[0.12em]">
               {stock} {preview ? "preview count" : "available"}
             </p>
           </div>
           <Button
             type="button"
             size="sm"
-            className="shrink-0 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 text-[10px] font-bold tracking-[0.16em] text-cyan-200 uppercase hover:bg-cyan-300/20"
+            className="shrink-0 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-2 text-[8px] font-bold tracking-[0.08em] text-cyan-200 uppercase hover:bg-cyan-300/20 sm:px-3 sm:text-[10px] sm:tracking-[0.16em]"
             onClick={(event) => {
               event.stopPropagation();
               openDetail();

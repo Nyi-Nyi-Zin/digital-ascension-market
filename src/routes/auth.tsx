@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/site/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 
@@ -60,18 +59,21 @@ function AuthPage() {
   async function signInWithGoogle() {
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const callback = new URL("/auth/callback", window.location.origin);
+      callback.searchParams.set("redirect", destination);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: callback.toString(),
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
+        },
       });
-      if (result.error) {
-        toast.error(result.error.message ?? "Google sign-in failed");
-        return;
-      }
-      if (result.redirected) return;
-      toast.success("Signed in");
+      if (error) throw error;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Google sign-in failed");
-    } finally {
       setBusy(false);
     }
   }

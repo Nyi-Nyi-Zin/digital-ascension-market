@@ -19,6 +19,10 @@ The code also accepts `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` as fallbacks
 
 Create the requested Auth user with email `admin@example.com` through Supabase Dashboard → Authentication → Users, using the password privately there. Do not commit the password to SQL, seed data, source code, or GitHub. Then run `admin_setup.sql` in the SQL Editor to create the matching profile and grant the `admin` role.
 
+## Google OAuth setup
+
+The app uses Supabase Auth with Google OAuth and completes the flow at `/auth/callback`. In Supabase Dashboard → Authentication → Providers → Google, enable Google and enter the Google OAuth Web Client ID and Client Secret. In Google Cloud Console, add the Supabase callback URL shown in the provider settings, normally `https://<project-ref>.supabase.co/auth/v1/callback`. In Supabase Dashboard → Authentication → URL Configuration, add the production site URL `https://digital-ascension-market.vercel.app` and the redirect URL `https://digital-ascension-market.vercel.app/auth/callback`. For local development, also add the local origin and `http://localhost:8081/auth/callback` if that is the active dev port. The application preserves a safe relative `redirect` query so a user can return to the product or protected page that initiated sign-in.
+
 ## Theme and payment settings
 
 The storefront includes a persistent light/dark mode toggle. Unit top-ups use the shared payment-method configuration: **KBZPay 09675507310, account name Nyi Nyi Zin**. Customers still need to upload payment proof, and admins must approve the top-up before units are credited.
