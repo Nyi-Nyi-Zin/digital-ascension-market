@@ -206,9 +206,9 @@ function Index() {
       {/* How it works */}
       <section className="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
         <p className="text-center text-2xl font-bold sm:text-3xl">{t("howItWorks")}</p>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <div key={step.key} className="glass lift rounded-3xl p-7">
+            <div key={step.key} className="glass lift w-full rounded-3xl p-7">
               <span className="gradient-brand flex size-12 items-center justify-center rounded-full shadow-glow">
                 <step.icon className="size-5 text-primary-foreground" />
               </span>
