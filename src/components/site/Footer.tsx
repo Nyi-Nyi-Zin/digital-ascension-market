@@ -11,8 +11,7 @@ export function Footer() {
         <div className="md:col-span-2">
           <Wordmark />
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-            Cloud Nine is a curated marketplace for digital subscriptions, design tools, virtual
-            cards and streaming accounts — paid locally, delivered instantly.
+            {t("footerDescription")}
           </p>
         </div>
         <div>
@@ -43,7 +42,7 @@ export function Footer() {
                 {t("faq")}
               </Link>
             </li>
-            <li>KBZPay · WavePay · Bank</li>
+            <li>{t("paymentMethods")}</li>
             <li>support@cloudnine.store</li>
           </ul>
         </div>

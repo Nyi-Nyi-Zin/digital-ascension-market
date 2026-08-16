@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/site/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminDashboard,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 type Stats = { revenue: number; pending: number; products: number; customers: number };
 
 function AdminDashboard() {
+  const { t } = useI18n();
   const { data: stats, isLoading } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async (): Promise<Stats> => {
@@ -37,20 +39,20 @@ function AdminDashboard() {
 
   const cards = [
     {
-      label: "Total revenue",
+      label: t("totalRevenue"),
       value: stats ? formatPrice(stats.revenue) : "—",
       icon: DollarSign,
     },
-    { label: "Pending orders", value: stats?.pending ?? "—", icon: Clock },
-    { label: "Total products", value: stats?.products ?? "—", icon: Package },
-    { label: "Total customers", value: stats?.customers ?? "—", icon: Users },
+    { label: t("pendingOrders"), value: stats?.pending ?? "—", icon: Clock },
+    { label: t("totalProducts"), value: stats?.products ?? "—", icon: Package },
+    { label: t("totalCustomers"), value: stats?.customers ?? "—", icon: Users },
   ];
 
   return (
     <div className="mx-auto max-w-5xl">
-      <h1 className="text-2xl font-bold sm:text-3xl">Dashboard</h1>
+      <h1 className="text-2xl font-bold sm:text-3xl">{t("dashboard")}</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Verify payments, manage stock and keep deliveries flowing.
+        {t("dashboardSummary")}
       </p>
 
       {isLoading ? (
@@ -73,9 +75,9 @@ function AdminDashboard() {
 
       <div className="glass mt-8 rounded-3xl p-7">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-semibold">Recent orders</h2>
+          <h2 className="text-base font-semibold">{t("recentOrders")}</h2>
           <Button asChild variant="soft" size="sm">
-            <Link to="/admin/orders">Review orders</Link>
+            <Link to="/admin/orders">{t("reviewOrders")}</Link>
           </Button>
         </div>
         <ul className="mt-5 divide-y divide-border">
@@ -83,7 +85,7 @@ function AdminDashboard() {
             <li key={order.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-sm font-semibold">
-                  {(order.products as { name: string } | null)?.name ?? "Product"}
+                  {(order.products as { name: string } | null)?.name ?? t("product")}
                 </p>
                 <p className="text-xs text-subtle">
                   {new Date(order.created_at).toLocaleString()}
@@ -96,7 +98,7 @@ function AdminDashboard() {
             </li>
           ))}
           {(recent?.length ?? 0) === 0 ? (
-            <li className="py-6 text-center text-sm text-muted-foreground">No orders yet.</li>
+            <li className="py-6 text-center text-sm text-muted-foreground">{t("noOrders")}</li>
           ) : null}
         </ul>
       </div>

@@ -147,49 +147,46 @@ function ProductDetail() {
           </div>
 
           <aside className="glass h-fit rounded-3xl p-8 lg:sticky lg:top-24">
-            <p className="text-sm text-muted-foreground">Price</p>
+            <p className="text-sm text-muted-foreground">{t("price")}</p>
             <p className="mt-1 text-4xl font-extrabold">{formatPrice(product.price)}</p>
             <p className="mt-2 text-xs tracking-[0.16em] text-muted-foreground uppercase">
-              {Number(product.price).toFixed(2)} units required
+              {Number(product.price).toFixed(2)} {t("unitsRequired")}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              Balance: {walletLoading ? "Checking…" : `${balance.toFixed(2)} units`}
+              {t("balance")}: {walletLoading ? "…" : `${balance.toFixed(2)} ${t("units")}`}
             </p>
             {!walletLoading && !canAfford ? (
-              <p className="mt-2 text-sm font-semibold text-amber-600">Insufficient balance</p>
+              <p className="mt-2 text-sm font-semibold text-amber-600">{t("insufficientBalance")}</p>
             ) : null}
             <p className="mt-2 text-xs text-muted-foreground">
-              {user
-                ? "Sign in is active. Purchase attempts still use the protected checkout flow."
-                : "Sign in is required before purchase. Product details are public to browse."}
+              {t("publicBrowseNotice")}
             </p>
 
             <div className="mt-6 flex items-center gap-2 text-sm">
               <Package className="size-4 text-primary" />
               <span className="font-semibold text-muted-foreground">
-                {realAvailable > 0 ? `${available} in stock` : `${available} preview count`}
+                {realAvailable > 0 ? `${available} ${t("inStock")}` : `${available} ${t("previewCount")}`}
               </span>
             </div>
 
             <Button asChild variant="hero" size="lg" className="mt-6 w-full">
               {user ? (
                 <Link to="/checkout/$productId" params={{ productId: product.id }}>
-                  Try purchase
+                  {t("tryPurchase")}
                 </Link>
               ) : (
                 <Link to="/auth" search={{ redirect: `/products/${product.id}` }}>
-                  Sign in to purchase
+                  {t("signInToPurchase")}
                 </Link>
               )}
             </Button>
 
             <ul className="mt-6 space-y-3 text-xs text-muted-foreground">
               <li className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-primary" /> Pay securely with Cloud Nine units
+                <ShieldCheck className="size-4 text-primary" /> {t("securePayment")}
               </li>
               <li className="flex items-center gap-2">
-                <Zap className="size-4 text-primary" /> Credentials unlock immediately after
-                checkout
+                <Zap className="size-4 text-primary" /> {t("instantDelivery")}
               </li>
             </ul>
           </aside>

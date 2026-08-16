@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Wordmark } from "@/components/site/Header";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 
 const searchSchema = {
   parse: (value: Record<string, unknown>) => ({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/auth/callback")({
 function OAuthCallbackPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [error, setError] = useState<string | null>(
     search.error_description ?? search.error ?? null,
   );
@@ -48,7 +50,7 @@ function OAuthCallbackPage() {
       const { data, error: sessionError } = await supabase.auth.getSession();
       if (!active) return;
       if (sessionError || !data.session) {
-        setError(sessionError?.message ?? "OAuth sign-in did not create a session.");
+        setError(sessionError?.message ?? t("somethingWentWrong"));
         return;
       }
 
@@ -67,18 +69,18 @@ function OAuthCallbackPage() {
       <div className="glass mt-8 w-full max-w-md rounded-3xl p-8 text-center">
         {error ? (
           <>
-            <h1 className="text-2xl font-bold">Google sign-in failed</h1>
+            <h1 className="text-2xl font-bold">{t("somethingWentWrong")}</h1>
             <p className="mt-3 text-sm text-muted-foreground">{error}</p>
             <Button className="mt-6 rounded-full" onClick={() => navigate({ to: "/auth" })}>
-              Back to sign in
+              {t("signIn")}
             </Button>
           </>
         ) : (
           <>
             <Loader2 className="mx-auto size-7 animate-spin text-primary" />
-            <h1 className="mt-4 text-2xl font-bold">Completing sign-in</h1>
+            <h1 className="mt-4 text-2xl font-bold">{t("signIn")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Please wait while we securely finish your Google sign-in.
+              {t("securePayment")}
             </p>
           </>
         )}

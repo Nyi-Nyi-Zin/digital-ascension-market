@@ -57,7 +57,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[color:var(--glass-border)] bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to="/" aria-label="Cloud Nine home">
+        <Link to="/" aria-label={t("home")}>
           <Wordmark />
         </Link>
 
@@ -79,8 +79,8 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={theme === "dark" ? t("switchToLight") : t("switchToDark")}
+            title={theme === "dark" ? t("switchToLight") : t("switchToDark")}
             onClick={toggleTheme}
           >
             {theme === "dark" ? <Sun /> : <Moon />}
@@ -96,7 +96,8 @@ export function Header() {
               ) : null}
               <Button asChild variant="outline" size="sm">
                 <Link to="/units">
-                  <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} units
+                                        <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
+
                 </Link>
               </Button>
               <Button asChild variant="soft" size="sm">
@@ -126,7 +127,7 @@ export function Header() {
           variant="ghost"
           size="icon"
           className="md:hidden"
-          aria-label="Toggle menu"
+          aria-label={t("toggleMenu")}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X /> : <Menu />}
@@ -150,18 +151,18 @@ export function Header() {
               <LanguageSelector compact />
               <Button variant="outline" onClick={toggleTheme}>
                 {theme === "dark" ? <Sun /> : <Moon />}
-                {theme === "dark" ? "Light mode" : "Dark mode"}
+                {theme === "dark" ? t("lightMode") : t("darkMode")}
               </Button>
               {user ? (
                 <>
                   {isAdmin ? (
                     <Button asChild variant="outline" onClick={() => setOpen(false)}>
-                      <Link to="/admin">{t("admin")} dashboard</Link>
+                      <Link to="/admin">{t("adminDashboard")}</Link>
                     </Button>
                   ) : null}
                   <Button asChild variant="outline" onClick={() => setOpen(false)}>
                     <Link to="/units">
-                      <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} units
+                    <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
                     </Link>
                   </Button>
                   <Button asChild variant="soft" onClick={() => setOpen(false)}>

@@ -6,6 +6,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { StatusBadge } from "@/components/site/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, PAYMENT_METHODS } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/orders/$orderId")({
   component: OrderConfirmation,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/orders/$orderId")({
 
 function OrderConfirmation() {
   const { orderId } = Route.useParams();
+  const { t } = useI18n();
 
   const { data, isLoading } = useQuery({
     queryKey: ["order", orderId],
@@ -41,9 +43,9 @@ function OrderConfirmation() {
     return (
       <SiteLayout>
         <div className="mx-auto max-w-xl px-4 py-24 text-center">
-          <h1 className="text-2xl font-bold">Order not found</h1>
+          <h1 className="text-2xl font-bold">{t("orderNotFound")}</h1>
           <Button asChild variant="hero" className="mt-6">
-            <Link to="/purchases">My purchases</Link>
+            <Link to="/purchases">{t("myPurchases")}</Link>
           </Button>
         </div>
       </SiteLayout>
@@ -52,11 +54,8 @@ function OrderConfirmation() {
 
   const method = PAYMENT_METHODS.find((m) => m.value === data.payment_method);
   const methodLabel =
-    data.payment_method === "units" ? "Cloud Nine units" : (method?.label ?? data.payment_method);
-  const confirmationMessage =
-    data.status === "delivered"
-      ? "Your units were charged successfully and your digital credentials are ready."
-      : "Thank you! We're checking your payment now.";
+    data.payment_method === "units" ? `Cloud Nine ${t("units")}` : (method?.label ?? data.payment_method);
+  const confirmationMessage = data.status === "delivered" ? t("credentials") : t("pendingVerification");
 
   return (
     <SiteLayout>
@@ -65,7 +64,7 @@ function OrderConfirmation() {
           <span className="gradient-brand mx-auto flex size-16 items-center justify-center rounded-full shadow-glow">
             <CheckCircle2 className="size-7 text-primary-foreground" />
           </span>
-          <h1 className="mt-6 text-2xl font-bold">Order received</h1>
+          <h1 className="mt-6 text-2xl font-bold">{t("orderReceived")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{confirmationMessage}</p>
 
           <div className="mt-6 flex justify-center">
@@ -74,21 +73,21 @@ function OrderConfirmation() {
 
           <dl className="mt-8 space-y-3 rounded-3xl bg-lavender-light/60 p-6 text-left text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Order ID</dt>
+              <dt className="text-muted-foreground">{t("orderId")}</dt>
               <dd className="font-mono text-xs break-all">{data.id}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Product</dt>
+              <dt className="text-muted-foreground">{t("product")}</dt>
               <dd className="font-semibold">
                 {(data.products as { name: string } | null)?.name ?? "—"} × {data.quantity}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Total</dt>
+              <dt className="text-muted-foreground">{t("total")}</dt>
               <dd className="font-semibold">{formatPrice(data.total_price)}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Paid with</dt>
+              <dt className="text-muted-foreground">{t("paidWith")}</dt>
               <dd>{methodLabel}</dd>
             </div>
           </dl>
@@ -96,16 +95,16 @@ function OrderConfirmation() {
           <p className="mt-6 inline-flex items-center gap-2 text-xs text-subtle">
             <Clock className="size-4 text-primary" />
             {data.status === "delivered"
-              ? "Your credentials are also available in My Purchases."
-              : "Admin will verify your payment within 3 hours (max 24 hours)."}
+              ? `${t("credentials")} — ${t("myPurchases")}`
+              : t("pendingVerification")}
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="hero">
-              <Link to="/purchases">View my purchases</Link>
+              <Link to="/purchases">{t("viewMyPurchases")}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to="/products">Keep shopping</Link>
+              <Link to="/products">{t("keepShopping")}</Link>
             </Button>
           </div>
         </div>

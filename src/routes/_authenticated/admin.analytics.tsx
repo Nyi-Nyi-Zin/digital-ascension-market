@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart3, ExternalLink, Globe2, Loader2, Monitor, Search, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/analytics")({
   component: AdminAnalyticsPage,
@@ -29,6 +30,7 @@ const SEO_URLS = [
 ];
 
 function AdminAnalyticsPage() {
+  const { t } = useI18n();
   const [range, setRange] = useState<RangeDays>(7);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-analytics-page-views"],
@@ -82,11 +84,10 @@ function AdminAnalyticsPage() {
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-primary">Growth and discoverability</p>
-          <h1 className="mt-2 text-3xl font-extrabold">SEO & visitor analytics</h1>
+          <p className="text-sm font-semibold text-primary">{t("growthDiscoverability")}</p>
+          <h1 className="mt-2 text-3xl font-extrabold">{t("seoAnalytics")}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Privacy-safe first-party pageview summary. Account, checkout, wallet and admin routes
-            are never tracked.
+            {t("analyticsDescription")}
           </p>
         </div>
         <div className="flex rounded-full border border-border bg-background/60 p-1">
@@ -99,7 +100,7 @@ function AdminAnalyticsPage() {
                 range === days ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               }`}
             >
-              {days} days
+              {days} {t("days")}
             </button>
           ))}
         </div>
@@ -113,27 +114,24 @@ function AdminAnalyticsPage() {
         <>
           {data?.error ? (
             <div className="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-700 dark:text-amber-300">
-              Analytics table is not available yet. Apply
-              <code className="mx-1 rounded bg-background/60 px-1.5 py-0.5">
-                20260817000000_analytics.sql
-              </code>
-              in Supabase to start collecting pageviews.
+              {t("analyticsTableMissing")} {t("applyAnalyticsMigration")}
+              <code className="mx-1 rounded bg-background/60 px-1.5 py-0.5">20260817000000_analytics.sql</code>
             </div>
           ) : null}
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard label="Pageviews" value={summary.pageviews} icon={BarChart3} />
-            <MetricCard label="Unique visitors" value={summary.visitors} icon={Users} />
-            <MetricCard label="Public pages tracked" value={24} icon={Globe2} />
-            <MetricCard label="Search Console" value="Not connected" icon={Search} />
+            <MetricCard label={t("pageviews")} value={summary.pageviews} icon={BarChart3} />
+            <MetricCard label={t("uniqueVisitors")} value={summary.visitors} icon={Users} />
+            <MetricCard label={t("publicPagesTracked")} value={24} icon={Globe2} />
+            <MetricCard label={t("searchConsole")} value={t("notConnected")} icon={Search} />
           </div>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
             <section className="glass rounded-3xl p-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold">Visitor trend</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">Pageviews per day</p>
+                  <h2 className="text-base font-semibold">{t("visitorTrend")}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">{t("pageviewsPerDay")}</p>
                 </div>
                 <BarChart3 className="size-5 text-primary" />
               </div>
@@ -154,7 +152,8 @@ function AdminAnalyticsPage() {
             </section>
 
             <section className="glass rounded-3xl p-6">
-              <h2 className="text-base font-semibold">Device mix</h2>
+                                <h2 className="text-base font-semibold">{t("deviceMix")}</h2>
+
               <div className="mt-5 space-y-4">
                 {summary.devices.length ? (
                   summary.devices.map((item) => (
@@ -176,28 +175,27 @@ function AdminAnalyticsPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">No pageviews collected yet.</p>
+                  <p className="text-sm text-muted-foreground">{t("noPageviews")}</p>
                 )}
               </div>
             </section>
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <CountList title="Top public pages" items={summary.topPages} />
-            <CountList title="Traffic referrers" items={summary.referrers} />
+            <CountList title={t("topPublicPages")} items={summary.topPages} />
+            <CountList title={t("trafficReferrers")} items={summary.referrers} />
           </div>
 
           <section className="glass mt-6 rounded-3xl p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-semibold">SEO health</h2>
+                <h2 className="text-base font-semibold">{t("seoHealth")}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Public crawl assets are deployed. Search Console metrics require a verified
-                  property connection.
+                  {t("publicCrawlAssets")}
                 </p>
               </div>
               <span className="rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
-                Sitemap ready
+                {t("sitemapReady")}
               </span>
             </div>
             <div className="mt-5 flex flex-wrap gap-3">

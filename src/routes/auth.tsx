@@ -34,8 +34,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 const credentials = z.object({
-  email: z.string().trim().email("Enter a valid email address").max(255),
-  password: z.string().min(6, "Password must be at least 6 characters").max(72),
+  email: z.string().trim().email().max(255),
+  password: z.string().min(6).max(72),
   fullName: z.string().trim().max(100).optional(),
 });
 
@@ -73,7 +73,7 @@ function AuthPage() {
       });
       if (error) throw error;
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Google sign-in failed");
+      toast.error(error instanceof Error ? error.message : t("somethingWentWrong"));
       setBusy(false);
     }
   }
@@ -82,7 +82,7 @@ function AuthPage() {
     e.preventDefault();
     const parsed = credentials.safeParse({ email, password, fullName });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
+      toast.error(t("somethingWentWrong"));
       return;
     }
     setBusy(true);
@@ -99,20 +99,20 @@ function AuthPage() {
         if (error) throw error;
         if (!data.session) {
           throw new Error(
-            "Email confirmation is still enabled in Supabase. Disable Confirm email in Authentication settings and try again.",
+            t("somethingWentWrong"),
           );
         }
-        toast.success("Welcome to Cloud Nine!");
+        toast.success(t("createAccount"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: parsed.data.email,
           password: parsed.data.password,
         });
         if (error) throw error;
-        toast.success("Signed in");
+        toast.success(t("welcomeBack"));
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Authentication failed");
+      toast.error(error instanceof Error ? error.message : t("somethingWentWrong"));
     } finally {
       setBusy(false);
     }

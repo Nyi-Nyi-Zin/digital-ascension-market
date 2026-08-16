@@ -28,20 +28,21 @@ import {
 } from "@/lib/seo";
 
 function NotFoundComponent() {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="glass max-w-md rounded-3xl p-10 text-center">
         <h1 className="gradient-text text-7xl font-bold">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("pageNotFound")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          {t("somethingWentWrong")}
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="gradient-brand inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow"
           >
-            Go home
+            {t("goHome")}
           </Link>
         </div>
       </div>
@@ -51,6 +52,7 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
+  const { t } = useI18n();
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
@@ -60,10 +62,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="glass max-w-md rounded-3xl p-10 text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          {t("thisPageDidntLoad")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          {t("somethingWentWrong")}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -73,13 +75,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="gradient-brand inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow"
           >
-            Try again
+            {t("tryAgain")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground"
           >
-            Go home
+            {t("goHome")}
           </a>
         </div>
       </div>

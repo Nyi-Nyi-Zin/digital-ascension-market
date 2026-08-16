@@ -8,6 +8,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { StatusBadge } from "@/components/site/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, PAYMENT_METHODS } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/purchases")({
   component: PurchasesPage,
@@ -26,6 +27,7 @@ type PurchaseRow = {
 };
 
 function PurchasesPage() {
+  const { t } = useI18n();
   const { data, isLoading } = useQuery({
     queryKey: ["my-orders"],
     queryFn: async (): Promise<PurchaseRow[]> => {
@@ -44,10 +46,10 @@ function PurchasesPage() {
     <SiteLayout>
       <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
         <h1 className="text-3xl font-extrabold sm:text-4xl">
-          My <span className="gradient-text">purchases</span>
+          {t("myPurchases")}
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Track verification status and copy your delivered credentials.
+          {t("trackPurchases")}
         </p>
 
         {isLoading ? (
@@ -59,12 +61,12 @@ function PurchasesPage() {
             <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-lavender">
               <ShoppingBag className="size-6 text-primary" />
             </span>
-            <h2 className="mt-5 text-lg font-semibold">No orders yet</h2>
+            <h2 className="mt-5 text-lg font-semibold">{t("noOrders")}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Once you buy a product it will show up here.
+              {t("trackPurchases")}
             </p>
             <Button asChild variant="hero" className="mt-6">
-              <Link to="/products">Browse products</Link>
+              <Link to="/products">{t("products")}</Link>
             </Button>
           </div>
         ) : (
@@ -80,18 +82,19 @@ function PurchasesPage() {
 }
 
 function OrderCard({ order }: { order: PurchaseRow }) {
+  const { t } = useI18n();
   const [reveal, setReveal] = useState(false);
   const [copied, setCopied] = useState(false);
   const method = PAYMENT_METHODS.find((m) => m.value === order.payment_method);
   const methodLabel =
-    order.payment_method === "units" ? "Cloud Nine units" : (method?.label ?? order.payment_method);
+    order.payment_method === "units" ? `Cloud Nine ${t("units")}` : (method?.label ?? order.payment_method);
   const credential = order.stock_items?.credential_data;
 
   async function copy() {
     if (!credential) return;
     await navigator.clipboard.writeText(credential);
     setCopied(true);
-    toast.success("Credentials copied");
+    toast.success(t("copied"));
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -99,9 +102,9 @@ function OrderCard({ order }: { order: PurchaseRow }) {
     <article className="glass rounded-3xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">{order.products?.name ?? "Product"}</h2>
+          <h2 className="text-base font-semibold">{order.products?.name ?? t("product")}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            {new Date(order.created_at).toLocaleString()} · {methodLabel} · Qty {order.quantity}
+            {new Date(order.created_at).toLocaleString()} · {methodLabel} · {t("qty")} {order.quantity}
           </p>
         </div>
         <div className="text-right">
@@ -113,19 +116,19 @@ function OrderCard({ order }: { order: PurchaseRow }) {
       {order.status === "delivered" ? (
         <div className="mt-5">
           <Button variant="soft" size="sm" onClick={() => setReveal((v) => !v)}>
-            {reveal ? <EyeOff /> : <Eye />} {reveal ? "Hide details" : "View Details"}
+            {reveal ? <EyeOff /> : <Eye />} {reveal ? t("hideDetails") : t("viewDetails")}
           </Button>
           {reveal ? (
             <div className="mt-4 rounded-2xl bg-lavender-light/70 p-5">
               <p className="text-xs font-bold tracking-widest text-subtle uppercase">
-                Your credentials
+                {t("credentials")}
               </p>
               <pre className="mt-3 overflow-x-auto rounded-xl bg-background/80 p-4 font-mono text-xs whitespace-pre-wrap">
-                {credential ?? "Credentials are being prepared — refresh in a moment."}
+                {credential ?? t("credentialsPreparing")}
               </pre>
               {credential ? (
                 <Button variant="outline" size="sm" className="mt-3" onClick={copy}>
-                  {copied ? <Check /> : <Copy />} {copied ? "Copied" : "Copy"}
+                  {copied ? <Check /> : <Copy />} {copied ? t("copied") : t("copy")}
                 </Button>
               ) : null}
             </div>
@@ -135,13 +138,13 @@ function OrderCard({ order }: { order: PurchaseRow }) {
 
       {order.status === "rejected" && order.rejection_reason ? (
         <p className="mt-5 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-          <strong className="font-semibold">Reason:</strong> {order.rejection_reason}
+          <strong className="font-semibold">{t("reason")}:</strong> {order.rejection_reason}
         </p>
       ) : null}
 
       {order.status === "pending" ? (
         <p className="mt-5 text-xs text-subtle">
-          Awaiting manual payment verification — usually within 3 hours.
+          {t("awaitingVerification")}
         </p>
       ) : null}
     </article>

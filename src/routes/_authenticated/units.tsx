@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { formatPrice, PAYMENT_METHODS } from "@/lib/marketplace";
 import {
   formatMMK,
@@ -24,10 +25,11 @@ export const Route = createFileRoute("/_authenticated/units")({
   component: UnitsPage,
 });
 
-const noteSchema = z.string().trim().min(3, "Add your transaction ID or a short note").max(300);
+const noteSchema = z.string().trim().min(3).max(300);
 
 function UnitsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const { data: balance, isLoading: balanceLoading } = useQuery(walletBalanceQuery(user?.id));
   const { data: topups, isLoading: topupsLoading } = useQuery(unitTopupsQuery(user?.id));
@@ -44,24 +46,24 @@ function UnitsPage() {
 
   async function submitTopup() {
     if (!user || !validUnits) {
-      toast.error("Enter a unit amount between 0.01 and 10,000.");
+      toast.error(t("enterUnitAmount"));
       return;
     }
     const parsedNote = noteSchema.safeParse(note);
     if (!parsedNote.success) {
-      toast.error(parsedNote.error.issues[0]?.message ?? "Invalid note");
+      toast.error(t("invalidNote"));
       return;
     }
     if (!file) {
-      toast.error("Please upload your payment screenshot");
+      toast.error(t("uploadScreenshot"));
       return;
     }
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+      toast.error(t("imageFileOnly"));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Screenshot must be smaller than 5MB");
+      toast.error(t("screenshotMax"));
       return;
     }
 
@@ -88,10 +90,10 @@ function UnitsPage() {
 
       setNote("");
       setFile(null);
-      toast.success("Unit top-up submitted for verification");
+      toast.success(t("unitTopupSubmitted"));
       await queryClient.invalidateQueries({ queryKey: ["unit-topups", user.id] });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not submit the unit top-up");
+      toast.error(error instanceof Error ? error.message : t("topupSubmitError"));
     } finally {
       setBusy(false);
     }
@@ -106,21 +108,20 @@ function UnitsPage() {
               to="/products"
               className="text-sm font-semibold text-muted-foreground hover:text-primary"
             >
-              ← Back to products
+              ← {t("products")}
             </Link>
             <h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">
-              Buy <span className="gradient-text">units</span>
+              {t("unitsToBuy")}
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Units are your Cloud Nine wallet balance. One unit equals one USD of product value.
-              Add units with MMK first, then spend them on digital products.
+              {t("productPricesInUsd")}
             </p>
           </div>
           <div className="glass flex items-center gap-3 rounded-2xl px-5 py-4">
             <WalletCards className="size-5 text-primary" />
             <div>
               <p className="text-xs font-bold tracking-widest text-subtle uppercase">
-                Available units
+                {t("availableUnits")}
               </p>
               <p className="mt-1 text-2xl font-extrabold">
                 {balanceLoading ? "…" : Number(balance?.balance ?? 0).toFixed(2)}
@@ -133,17 +134,16 @@ function UnitsPage() {
           <div className="space-y-6">
             <section className="glass rounded-3xl p-7">
               <h2 className="text-sm font-bold tracking-widest text-subtle uppercase">
-                Fixed unit rate
+                {t("fixedUnitRate")}
               </h2>
               <div className="mt-4 rounded-2xl bg-lavender-light/70 p-5">
                 <p className="text-2xl font-extrabold">1 USD = {formatMMK(UNIT_MMK_RATE)}</p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Product prices remain in USD. The MMK amount below is the amount to transfer for
-                  your selected units.
+                  {t("productPricesInUsd")}
                 </p>
               </div>
               <div className="mt-6 space-y-2">
-                <Label htmlFor="units">Units to buy</Label>
+                <Label htmlFor="units">{t("unitsToBuy")}</Label>
                 <Input
                   id="units"
                   type="number"
@@ -152,21 +152,21 @@ function UnitsPage() {
                   step="0.01"
                   value={units}
                   onChange={(event) => setUnits(event.target.value)}
-                  placeholder="e.g. 5, 10, 25, or 50 USD"
+                  placeholder={t("examples")}
                   inputMode="decimal"
                   className="rounded-2xl"
                 />
                 <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/10 p-4">
                   <p className="text-xs font-bold tracking-widest text-subtle uppercase">
-                    Exact amount to transfer
+                    {t("exactAmountToTransfer")}
                   </p>
                   <p className="mt-1 text-xl font-extrabold text-primary">
-                    {validUnits ? `${formatMMK(mmkAmount)} MMK` : "Enter your USD units above"}
+                    {validUnits ? `${formatMMK(mmkAmount)} MMK` : t("enterUsdUnits")}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {validUnits
                       ? `${Number(parsedUnits).toFixed(2)} USD units × ${formatMMK(UNIT_MMK_RATE)} MMK`
-                      : "Examples: 5 USD = 18,315 MMK · 10 USD = 36,630 MMK · 50 USD = 183,150 MMK"}
+                      : t("examples")}
                   </p>
                 </div>
               </div>
@@ -174,7 +174,7 @@ function UnitsPage() {
 
             <section className="glass rounded-3xl p-7">
               <h2 className="text-sm font-bold tracking-widest text-subtle uppercase">
-                Local payment
+                {t("localPayment")}
               </h2>
               <div className="mt-4 flex flex-wrap gap-2">
                 {PAYMENT_METHODS.map((item) => (
@@ -197,20 +197,17 @@ function UnitsPage() {
                 <p className="mt-1 text-muted-foreground">{selected.holder}</p>
                 <p className="mt-1 font-mono text-lg font-semibold">{selected.account}</p>
                 <p className="mt-3 font-semibold text-primary">
-                  Transfer exactly: {validUnits ? `${formatMMK(mmkAmount)} MMK` : "—"}
+                  {t("transferExactly")}: {validUnits ? `${formatMMK(mmkAmount)} MMK` : "—"}
                 </p>
                 <p className="mt-2 text-xs text-subtle">{selected.note}</p>
               </div>
               <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                <p className="text-sm font-bold">Submit payment proof</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  After transferring the exact amount, enter your transaction ID and upload the
-                  payment screenshot. Your units stay pending until an admin verifies the proof.
-                </p>
+                <p className="text-sm font-bold">{t("submitPaymentProof")}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t("afterTransferInstruction")}</p>
               </div>
               <div className="mt-5 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="unit-note">Transaction ID / note (required)</Label>
+                  <Label htmlFor="unit-note">{t("transactionIdNote")}</Label>
                   <Textarea
                     id="unit-note"
                     value={note}
@@ -221,13 +218,13 @@ function UnitsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="unit-proof">Payment screenshot (required)</Label>
+                  <Label htmlFor="unit-proof">{t("paymentScreenshot")}</Label>
                   <label
                     htmlFor="unit-proof"
                     className="flex cursor-pointer items-center gap-3 rounded-full border border-dashed border-primary/40 bg-background/60 px-5 py-3 text-sm text-muted-foreground hover:border-primary"
                   >
                     <ImageUp className="size-4 text-primary" />
-                    {file ? file.name : "Choose an image (PNG, JPG, or WEBP · max 5MB)"}
+                    {file ? file.name : t("chooseImage")}
                   </label>
                   <Input
                     id="unit-proof"
@@ -245,18 +242,17 @@ function UnitsPage() {
                 onClick={submitTopup}
                 disabled={busy || !validUnits}
               >
-                {busy ? <Loader2 className="animate-spin" /> : null} Submit payment proof
+                {busy ? <Loader2 className="animate-spin" /> : null} {t("submitPaymentProof")}
               </Button>
               <p className="mt-3 text-center text-xs text-subtle">
-                Your submission will show as pending until an admin verifies the transfer and
-                credits your units.
+                {t("pendingVerification")}
               </p>
             </section>
           </div>
 
           <aside className="glass h-fit rounded-3xl p-7 lg:sticky lg:top-24">
             <h2 className="text-sm font-bold tracking-widest text-subtle uppercase">
-              Top-up history
+              {t("topupHistory")}
             </h2>
             {topupsLoading ? (
               <div className="flex justify-center py-10">
@@ -264,7 +260,7 @@ function UnitsPage() {
               </div>
             ) : (topups?.length ?? 0) === 0 ? (
               <p className="mt-5 text-sm text-muted-foreground">
-                No unit top-ups yet. Submit your first payment proof to add units.
+                {t("noTopups")}
               </p>
             ) : (
               <div className="mt-5 space-y-3">
@@ -297,7 +293,7 @@ function UnitsPage() {
               </div>
             )}
             <div className="mt-7 border-t border-border pt-5 text-sm text-muted-foreground">
-              <p>Example: a $12.00 product requires 12.00 units.</p>
+              <p>{t("exampleProduct")}</p>
               <p className="mt-2 font-semibold text-foreground">{formatPrice(12)} = 43,956 MMK</p>
             </div>
           </aside>

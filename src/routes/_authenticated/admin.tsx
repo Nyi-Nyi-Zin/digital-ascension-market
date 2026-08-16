@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Header";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
@@ -28,6 +29,7 @@ const LINKS = [
 
 function AdminLayout() {
   const { isAdmin, loading } = useAuth();
+  const { t } = useI18n();
 
   if (loading) {
     return (
@@ -44,12 +46,12 @@ function AdminLayout() {
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-destructive/15">
             <ShieldAlert className="size-6 text-destructive" />
           </span>
-          <h1 className="mt-5 text-xl font-bold">Admins only</h1>
+          <h1 className="mt-5 text-xl font-bold">{t("adminOnly")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            This area is restricted to Cloud Nine staff accounts.
+            {t("adminOnlyDescription")}
           </p>
           <Button asChild variant="hero" className="mt-6">
-            <Link to="/products">Back to store</Link>
+            <Link to="/products">{t("backToStore")}</Link>
           </Button>
         </div>
       </div>
@@ -81,7 +83,7 @@ function AdminLayout() {
           to="/products"
           className="mt-auto hidden rounded-full px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-primary lg:block"
         >
-          ← Back to store
+          {t("backToStore")}
         </Link>
       </aside>
 

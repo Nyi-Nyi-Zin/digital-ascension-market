@@ -229,7 +229,7 @@ function Index() {
 
       {/* Testimonials */}
       <section className="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">Loved by 12,000+ customers</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("lovedByCustomers")}</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <figure key={t.name} className="glass lift rounded-3xl p-7">
