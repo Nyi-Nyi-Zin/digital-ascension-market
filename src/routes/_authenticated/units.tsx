@@ -201,26 +201,33 @@ function UnitsPage() {
                 </p>
                 <p className="mt-2 text-xs text-subtle">{selected.note}</p>
               </div>
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                <p className="text-sm font-bold">Submit payment proof</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  After transferring the exact amount, enter your transaction ID and upload the
+                  payment screenshot. Your units stay pending until an admin verifies the proof.
+                </p>
+              </div>
+              <div className="mt-5 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="unit-note">Transaction ID / note</Label>
+                  <Label htmlFor="unit-note">Transaction ID / note (required)</Label>
                   <Textarea
                     id="unit-note"
                     value={note}
                     onChange={(event) => setNote(event.target.value)}
                     maxLength={300}
-                    placeholder="e.g. KBZPay TRX 8842910"
+                    placeholder={`e.g. ${selected.label} TXN 8842910`}
                     className="rounded-2xl"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="unit-proof">Payment screenshot</Label>
+                  <Label htmlFor="unit-proof">Payment screenshot (required)</Label>
                   <label
                     htmlFor="unit-proof"
                     className="flex cursor-pointer items-center gap-3 rounded-full border border-dashed border-primary/40 bg-background/60 px-5 py-3 text-sm text-muted-foreground hover:border-primary"
                   >
                     <ImageUp className="size-4 text-primary" />
-                    {file ? file.name : "Choose an image (max 5MB)"}
+                    {file ? file.name : "Choose an image (PNG, JPG, or WEBP · max 5MB)"}
                   </label>
                   <Input
                     id="unit-proof"
@@ -238,10 +245,11 @@ function UnitsPage() {
                 onClick={submitTopup}
                 disabled={busy || !validUnits}
               >
-                {busy ? <Loader2 className="animate-spin" /> : null} Submit unit top-up
+                {busy ? <Loader2 className="animate-spin" /> : null} Submit payment proof
               </Button>
               <p className="mt-3 text-center text-xs text-subtle">
-                Units are credited after an admin verifies the transfer.
+                Your submission will show as pending until an admin verifies the transfer and
+                credits your units.
               </p>
             </section>
           </div>
