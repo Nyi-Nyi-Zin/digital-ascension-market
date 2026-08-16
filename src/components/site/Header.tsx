@@ -1,6 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, LogOut, Menu, ShoppingBag, WalletCards, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Moon,
+  ShoppingBag,
+  Sun,
+  WalletCards,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +17,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/site/LanguageSelector";
 import { walletBalanceQuery } from "@/lib/wallet";
+import { useTheme } from "@/lib/theme";
 
 const NAV = [
   { to: "/products", key: "products" },
@@ -31,6 +41,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
 export function Header() {
   const { user, isAdmin } = useAuth();
   const { t } = useI18n();
+  const { theme, toggleTheme } = useTheme();
   const { data: wallet } = useQuery(walletBalanceQuery(user?.id));
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -65,6 +76,15 @@ export function Header() {
 
         <div className="hidden items-center gap-2 md:flex">
           <LanguageSelector />
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            onClick={toggleTheme}
+          >
+            {theme === "dark" ? <Sun /> : <Moon />}
+          </Button>
           {user ? (
             <>
               {isAdmin ? (
@@ -128,6 +148,10 @@ export function Header() {
             ))}
             <div className="mt-3 flex flex-col gap-2">
               <LanguageSelector compact />
+              <Button variant="outline" onClick={toggleTheme}>
+                {theme === "dark" ? <Sun /> : <Moon />}
+                {theme === "dark" ? "Light mode" : "Dark mode"}
+              </Button>
               {user ? (
                 <>
                   {isAdmin ? (

@@ -4,7 +4,7 @@ The application expects a Supabase project with the schema and RPC functions def
 
 ## Apply the setup
 
-Run `20260816000000_marketplace.sql` first, then `20260816010000_units_wallet.sql` in the Supabase SQL Editor. After that, run `seed.sql` to create the starter categories and catalogue products. The seed file intentionally does **not** insert credentials or payment details. After creating an admin user and assigning the `admin` role in `public.user_roles`, add real stock through **Admin → Products → Stock**.
+Run `20260816000000_marketplace.sql` first, then `20260816010000_units_wallet.sql` in the Supabase SQL Editor. After that, run `seed.sql` to create the four categories and twenty safe catalogue products. The seed file intentionally does **not** insert credentials, stock items, Auth passwords, or payment secrets. After creating an admin user, run `admin_setup.sql` to assign the `admin` role, then add real stock through **Admin → Products → Stock**.
 
 The application requires these client-side variables in `.env`:
 
@@ -14,6 +14,14 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-or-publishable-key
 ```
 
 The code also accepts `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` as fallbacks for local tooling. Never commit `.env` files, service-role keys, customer credentials, or payment account secrets.
+
+## Admin account setup
+
+Create the requested Auth user with email `admin@example.com` through Supabase Dashboard → Authentication → Users, using the password privately there. Do not commit the password to SQL, seed data, source code, or GitHub. Then run `admin_setup.sql` in the SQL Editor to create the matching profile and grant the `admin` role.
+
+## Theme and payment settings
+
+The storefront includes a persistent light/dark mode toggle. Unit top-ups use the shared payment-method configuration: **KBZPay 09675507310, account name Nyi Nyi Zin**. Customers still need to upload payment proof, and admins must approve the top-up before units are credited.
 
 ## Storage buckets
 

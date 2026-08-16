@@ -51,9 +51,9 @@ export const PAYMENT_METHODS = [
   {
     value: "kbzpay",
     label: "KBZPay",
-    account: "0977 000 1234",
-    holder: "Cloud Nine Digital",
-    note: "Scan the QR or transfer to the number above.",
+    account: "09675507310",
+    holder: "Nyi Nyi Zin",
+    note: "Transfer the exact MMK amount to the KBZPay number above and keep your receipt.",
   },
   {
     value: "wavepay",

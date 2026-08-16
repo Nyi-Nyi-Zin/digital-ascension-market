@@ -1,11 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
+  CreditCard,
   Flame,
   LockKeyhole,
+  Palette,
   PenTool,
   Play,
+  PlayCircle,
   Sparkles,
-  CreditCard,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +15,15 @@ import { formatPrice, type Product } from "@/lib/marketplace";
 
 const ICONS: Record<string, LucideIcon> = {
   Sparkles,
+  sparkles: Sparkles,
   PenTool,
+  pen: PenTool,
+  palette: Palette,
   CreditCard,
+  "credit-card": CreditCard,
   Play,
+  play: Play,
+  "play-circle": PlayCircle,
 };
 
 export function CategoryIcon({
