@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { CreditCard, PenTool, Play, Sparkles, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice, type Product } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 const ICONS: Record<string, LucideIcon> = {
   Sparkles,
@@ -32,9 +33,26 @@ export function ProductCard({
 }) {
   const isMock = product.is_mock === true;
   const inStock = !isMock && stock > 0;
+  const navigate = useNavigate();
+  const { t } = useI18n();
+
+  function openDetail() {
+    navigate({ to: "/products/$id", params: { id: product.id } });
+  }
 
   return (
-    <article className="glass lift flex flex-col rounded-3xl p-6">
+    <article
+      className="glass lift flex cursor-pointer flex-col rounded-3xl p-3 sm:p-6"
+      onClick={openDetail}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openDetail();
+        }
+      }}
+      role="link"
+      tabIndex={0}
+    >
       <div className="flex items-start justify-between gap-3">
         {product.image_url ? (
           <img
@@ -57,18 +75,18 @@ export function ProductCard({
                 : "border-border bg-muted text-muted-foreground"
           }`}
         >
-          {isMock ? "Demo preview" : inStock ? `${stock} in stock` : "Sold out"}
+          {isMock ? t("demoPreview") : inStock ? `${stock} in stock` : "Sold out"}
         </span>
       </div>
 
-      <h3 className="mt-5 text-base font-semibold">{product.name}</h3>
+      <h3 className="mt-4 text-sm font-semibold sm:mt-5 sm:text-base">{product.name}</h3>
       <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
 
-      <div className="mt-6 flex items-center justify-between gap-3">
-        <span className="text-xl font-bold">{formatPrice(product.price)}</span>
+      <div className="mt-4 flex items-center justify-between gap-2 sm:mt-6 sm:gap-3">
+        <span className="text-base font-bold sm:text-xl">{formatPrice(product.price)}</span>
         {isMock ? (
           <Button variant="secondary" size="sm" disabled>
-            Preview only
+            {t("previewOnly")}
           </Button>
         ) : (
           <Button asChild variant={inStock ? "hero" : "secondary"} size="sm" disabled={!inStock}>

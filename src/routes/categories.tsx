@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { CategoryIcon } from "@/components/site/ProductCard";
 import { categoriesQuery, productsQuery } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
@@ -33,16 +34,13 @@ export const Route = createFileRoute("/categories")({
 function CategoriesPage() {
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data: products } = useSuspenseQuery(productsQuery);
+  const { t } = useI18n();
 
   return (
     <SiteLayout>
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <h1 className="text-3xl font-extrabold sm:text-4xl">
-          Browse by <span className="gradient-text">category</span>
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Four collections, all delivered the same way — pay locally, verified manually.
-        </p>
+        <h1 className="text-3xl font-extrabold sm:text-4xl">{t("categories")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("liveStock")}</p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
           {categories.map((cat) => {
@@ -60,7 +58,7 @@ function CategoriesPage() {
                   <span>
                     <span className="block text-base font-semibold">{cat.name}</span>
                     <span className="block text-xs text-muted-foreground">
-                      {count} product{count === 1 ? "" : "s"} available
+                      {count} {t("products")}
                     </span>
                   </span>
                 </span>

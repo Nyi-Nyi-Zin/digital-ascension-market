@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { CategoryIcon, ProductCard } from "@/components/site/ProductCard";
 import { categoriesQuery, productsQuery, stockCountsQuery } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/")({
   head: () => ({
@@ -35,6 +36,7 @@ function ProductsPage() {
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data: products } = useSuspenseQuery(productsQuery);
   const { data: stock } = useSuspenseQuery(stockCountsQuery);
+  const { t } = useI18n();
   const [active, setActive] = useState("all");
 
   const visible = active === "all" ? products : products.filter((p) => p.category_id === active);
@@ -42,13 +44,8 @@ function ProductsPage() {
   return (
     <SiteLayout>
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <h1 className="text-3xl font-extrabold sm:text-4xl">
-          All <span className="gradient-text">products</span>
-        </h1>
-        <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-          Every product is stocked with real credentials and delivered as soon as your payment is
-          verified.
-        </p>
+        <h1 className="text-3xl font-extrabold sm:text-4xl">{t("allProducts")}</h1>
+        <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("liveStock")}</p>
 
         <div className="mt-8 flex flex-wrap gap-2">
           <button
@@ -59,7 +56,7 @@ function ProductsPage() {
                 : "glass text-muted-foreground hover:text-primary"
             }`}
           >
-            All
+            {t("all")}
           </button>
           {categories.map((cat) => (
             <button
@@ -77,7 +74,7 @@ function ProductsPage() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {visible.map((product) => (
             <ProductCard
               key={product.id}
@@ -89,7 +86,7 @@ function ProductsPage() {
         </div>
         {visible.length === 0 ? (
           <p className="glass mt-8 rounded-3xl p-10 text-center text-sm text-muted-foreground">
-            Nothing here yet — check back soon.
+            {t("noProducts")}
           </p>
         ) : null}
       </div>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { FAQS, FaqAccordion } from "@/components/site/FaqAccordion";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
@@ -36,15 +37,13 @@ export const Route = createFileRoute("/faq")({
 });
 
 function FaqPage() {
+  const { t } = useI18n();
+
   return (
     <SiteLayout>
       <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-        <h1 className="text-3xl font-extrabold sm:text-4xl">
-          Questions, <span className="gradient-text">answered</span>
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Everything about paying locally and receiving your digital products.
-        </p>
+        <h1 className="text-3xl font-extrabold sm:text-4xl">{t("frequentlyAsked")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("liveStock")}</p>
         <div className="mt-10">
           <FaqAccordion />
         </div>

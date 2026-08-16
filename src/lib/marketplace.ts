@@ -180,9 +180,9 @@ export function productQuery(id: string) {
         .maybeSingle();
       if (error) {
         console.error("Failed to load product:", error);
-        return null;
+        return MOCK_PRODUCTS.find((product) => product.id === id) ?? null;
       }
-      return data as Product | null;
+      return (data as Product | null) ?? MOCK_PRODUCTS.find((product) => product.id === id) ?? null;
     },
   });
 }

@@ -10,6 +10,7 @@ import { Wordmark } from "@/components/site/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -43,6 +44,7 @@ function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { t } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,12 +124,10 @@ function AuthPage() {
 
       <div className="glass w-full max-w-md rounded-3xl p-8">
         <h1 className="text-2xl font-bold">
-          {mode === "signin" ? "Welcome back" : "Create your account"}
+          {mode === "signin" ? t("welcomeBack") : t("createAccount")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {mode === "signin"
-            ? "Sign in to track orders and view your credentials."
-            : "Start buying digital products with local payment methods."}
+          {mode === "signin" ? t("signInToTrack") : t("startBuying")}
         </p>
 
         <Button
@@ -156,19 +156,19 @@ function AuthPage() {
               d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.61l4.01 3.11C6.23 6.86 8.88 4.75 12 4.75Z"
             />
           </svg>
-          Continue with Google
+          {t("continueGoogle")}
         </Button>
 
         <div className="my-5 flex items-center gap-3 text-xs text-subtle">
           <span className="h-px flex-1 bg-border" />
-          or
+          {t("or")}
           <span className="h-px flex-1 bg-border" />
         </div>
 
         <form onSubmit={submit} className="space-y-4">
           {mode === "signup" ? (
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full name</Label>
+              <Label htmlFor="fullName">{t("fullName")}</Label>
               <Input
                 id="fullName"
                 value={fullName}
@@ -180,7 +180,7 @@ function AuthPage() {
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
@@ -193,7 +193,7 @@ function AuthPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
@@ -205,30 +205,28 @@ function AuthPage() {
               maxLength={72}
               className="rounded-full"
             />
-            <p className="text-xs text-subtle">
-              At least 6 characters. Special characters are optional.
-            </p>
+            <p className="text-xs text-subtle">{t("atLeastSix")}</p>
           </div>
           <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
             {busy ? <Loader2 className="animate-spin" /> : null}
-            {mode === "signin" ? "Sign In" : "Create account"}
+            {mode === "signin" ? t("signIn") : t("createAccount")}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "New to Cloud Nine?" : "Already have an account?"}{" "}
+          {mode === "signin" ? t("newToCloudNine") : t("alreadyHaveAccount")}{" "}
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
             className="font-semibold text-primary hover:text-primary-dark"
           >
-            {mode === "signin" ? "Create an account" : "Sign in"}
+            {mode === "signin" ? t("createAccount") : t("signIn")}
           </button>
         </p>
       </div>
 
       <Link to="/" className="mt-8 text-xs text-subtle hover:text-primary">
-        ← Back to store
+        {t("backToStore")}
       </Link>
     </div>
   );

@@ -16,6 +16,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, CategoryIcon } from "@/components/site/ProductCard";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { categoriesQuery, productsQuery, stockCountsQuery } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,7 +30,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Cloud Nine — Buy Digital Subscriptions & Accounts" },
       {
         property: "og:description",
-        content: "AI subscriptions, design tools, virtual cards and streaming — delivered instantly.",
+        content:
+          "AI subscriptions, design tools, virtual cards and streaming — delivered instantly.",
       },
     ],
   }),
@@ -44,28 +46,16 @@ export const Route = createFileRoute("/")({
 });
 
 const TRUST = [
-  { icon: ShieldCheck, label: "Secure Payment" },
-  { icon: Zap, label: "Instant Delivery" },
-  { icon: Headphones, label: "24/7 Support" },
-];
+  { icon: ShieldCheck, key: "securePayment" },
+  { icon: Zap, key: "instantDelivery" },
+  { icon: Headphones, key: "support247" },
+] as const;
 
 const STEPS = [
-  {
-    icon: Sparkles,
-    title: "Pick your product",
-    body: "Browse curated AI, design, card and streaming products with live stock counts.",
-  },
-  {
-    icon: Upload,
-    title: "Pay & upload proof",
-    body: "Transfer with KBZPay, WavePay or bank, then upload your payment screenshot.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Get your credentials",
-    body: "Our team verifies manually and your login details unlock in My Purchases.",
-  },
-];
+  { icon: Sparkles, key: "stepPick", bodyKey: "stepPickBody" },
+  { icon: Upload, key: "stepPay", bodyKey: "stepPayBody" },
+  { icon: BadgeCheck, key: "stepCredentials", bodyKey: "stepCredentialsBody" },
+] as const;
 
 const STATS = [
   { value: "12,400+", label: "Orders delivered" },
@@ -96,12 +86,11 @@ function Index() {
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data: products } = useSuspenseQuery(productsQuery);
   const { data: stock } = useSuspenseQuery(stockCountsQuery);
+  const { t } = useI18n();
   const [active, setActive] = useState<string>("all");
 
-  const visible =
-    active === "all" ? products : products.filter((p) => p.category_id === active);
-  const iconFor = (categoryId: string | null) =>
-    categories.find((c) => c.id === categoryId)?.icon;
+  const visible = active === "all" ? products : products.filter((p) => p.category_id === active);
+  const iconFor = (categoryId: string | null) => categories.find((c) => c.id === categoryId)?.icon;
 
   return (
     <SiteLayout>
@@ -117,30 +106,27 @@ function Index() {
             Manual payment verification · Local methods supported
           </span>
           <h1 className="mt-6 text-4xl leading-tight font-extrabold sm:text-6xl">
-            Premium digital products, <span className="gradient-text">delivered on cloud nine</span>
+            {t("premiumDigitalProducts")}
           </h1>
-          <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-            AI subscriptions, design tools, virtual cards and streaming accounts — pay with KBZPay,
-            WavePay or bank transfer and receive your credentials the moment we verify.
-          </p>
+          <p className="mt-5 text-base text-muted-foreground sm:text-lg">{t("heroDescription")}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="hero" size="lg">
               <Link to="/products">
-                Browse products <ArrowRight />
+                {t("browseProducts")} <ArrowRight />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/faq">How it works</Link>
+              <Link to="/faq">{t("howItWorks")}</Link>
             </Button>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             {TRUST.map((item) => (
               <span
-                key={item.label}
+                key={item.key}
                 className="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold"
               >
                 <item.icon className="size-4 text-primary" />
-                {item.label}
+                {t(item.key)}
               </span>
             ))}
           </div>
@@ -151,16 +137,14 @@ function Index() {
       <section id="products" className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold sm:text-3xl">Featured products</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Live stock counts, instant delivery after verification.
-            </p>
+            <h2 className="text-2xl font-bold sm:text-3xl">{t("featuredProducts")}</h2>
+            <p className="mt-2 text-sm text-muted-foreground">{t("liveStock")}</p>
           </div>
           <Link
             to="/products"
             className="text-sm font-semibold text-primary hover:text-primary-dark"
           >
-            View all →
+            {t("viewAll")}
           </Link>
         </div>
 
@@ -173,7 +157,7 @@ function Index() {
                 : "glass text-muted-foreground hover:text-primary"
             }`}
           >
-            All
+            {t("all")}
           </button>
           {categories.map((cat) => (
             <button
@@ -191,7 +175,7 @@ function Index() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {visible.slice(0, 6).map((product) => (
             <ProductCard
               key={product.id}
@@ -203,23 +187,23 @@ function Index() {
         </div>
         {visible.length === 0 ? (
           <p className="glass mt-8 rounded-3xl p-10 text-center text-sm text-muted-foreground">
-            No products in this category yet.
+            {t("noProducts")}
           </p>
         ) : null}
       </section>
 
       {/* How it works */}
       <section className="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">How it works</h2>
+        <p className="text-center text-2xl font-bold sm:text-3xl">{t("howItWorks")}</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <div key={step.title} className="glass lift rounded-3xl p-7">
+            <div key={step.key} className="glass lift rounded-3xl p-7">
               <span className="gradient-brand flex size-12 items-center justify-center rounded-full shadow-glow">
                 <step.icon className="size-5 text-primary-foreground" />
               </span>
               <p className="mt-5 text-xs font-bold tracking-widest text-subtle">STEP {i + 1}</p>
-              <h3 className="mt-1 text-base font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{step.body}</p>
+              <h3 className="mt-1 text-base font-semibold">{t(step.key)}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{t(step.bodyKey)}</p>
             </div>
           ))}
         </div>
@@ -260,7 +244,7 @@ function Index() {
 
       {/* FAQ */}
       <section className="mx-auto mt-24 max-w-3xl px-4 sm:px-6">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">Frequently asked questions</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("frequentlyAsked")}</h2>
         <div className="mt-10">
           <FaqAccordion />
         </div>

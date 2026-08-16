@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
+import { useI18n } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="mt-24 border-t border-[color:var(--glass-border)] bg-background/60 backdrop-blur-xl">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
@@ -13,31 +16,31 @@ export function Footer() {
           </p>
         </div>
         <div>
-          <h3 className="text-sm font-semibold">Marketplace</h3>
+          <h3 className="text-sm font-semibold">{t("marketplace")}</h3>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>
               <Link to="/products" className="hover:text-primary">
-                All products
+                {t("allProducts")}
               </Link>
             </li>
             <li>
               <Link to="/categories" className="hover:text-primary">
-                Categories
+                {t("categories")}
               </Link>
             </li>
             <li>
               <Link to="/purchases" className="hover:text-primary">
-                My purchases
+                {t("myPurchases")}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="text-sm font-semibold">Support</h3>
+          <h3 className="text-sm font-semibold">{t("support")}</h3>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>
               <Link to="/faq" className="hover:text-primary">
-                FAQ
+                {t("faq")}
               </Link>
             </li>
             <li>KBZPay · WavePay · Bank</li>
@@ -46,7 +49,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-[color:var(--glass-border)] px-4 py-6 text-center text-xs text-subtle">
-        © {new Date().getFullYear()} Cloud Nine. All rights reserved.
+        © {new Date().getFullYear()} Cloud Nine. {t("allRightsReserved")}
       </div>
     </footer>
   );

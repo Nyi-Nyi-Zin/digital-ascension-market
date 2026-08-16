@@ -11,6 +11,7 @@ import {
   stockCountsQuery,
   whatYouGetList,
 } from "@/lib/marketplace";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$id")({
   loader: async ({ context, params }) => {
@@ -25,7 +26,10 @@ export const Route = createFileRoute("/products/$id")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — Cloud Nine" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Product unavailable — Cloud Nine" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const title = `${loaderData.name} — Cloud Nine`;
@@ -56,6 +60,7 @@ export const Route = createFileRoute("/products/$id")({
 
 function ProductDetail() {
   const { id } = Route.useParams();
+  const { t } = useI18n();
   const { data: product } = useSuspenseQuery(productQuery(id));
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data: stock } = useSuspenseQuery(stockCountsQuery);
@@ -71,7 +76,7 @@ function ProductDetail() {
           to="/products"
           className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary"
         >
-          <ArrowLeft className="size-4" /> All products
+          <ArrowLeft className="size-4" /> {t("allProducts")}
         </Link>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -130,7 +135,13 @@ function ProductDetail() {
               )}
             </div>
 
-            <Button asChild variant="hero" size="lg" className="mt-6 w-full" disabled={available === 0}>
+            <Button
+              asChild
+              variant="hero"
+              size="lg"
+              className="mt-6 w-full"
+              disabled={available === 0}
+            >
               {available > 0 ? (
                 <Link to="/checkout/$productId" params={{ productId: product.id }}>
                   Buy Now

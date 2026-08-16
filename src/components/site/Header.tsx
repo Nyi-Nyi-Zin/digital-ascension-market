@@ -5,11 +5,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/site/LanguageSelector";
 
 const NAV = [
-  { to: "/products", label: "Products" },
-  { to: "/categories", label: "Categories" },
-  { to: "/faq", label: "FAQ" },
+  { to: "/products", key: "products" },
+  { to: "/categories", key: "categories" },
+  { to: "/faq", key: "faq" },
 ] as const;
 
 export function Wordmark({ className = "" }: { className?: string }) {
@@ -27,6 +29,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
 
 export function Header() {
   const { user, isAdmin } = useAuth();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -53,38 +56,39 @@ export function Header() {
               className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               activeProps={{ className: "bg-accent text-accent-foreground" }}
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <LanguageSelector />
           {user ? (
             <>
               {isAdmin ? (
                 <Button asChild variant="outline" size="sm">
                   <Link to="/admin">
-                    <LayoutDashboard /> Admin
+                    <LayoutDashboard /> {t("admin")}
                   </Link>
                 </Button>
               ) : null}
               <Button asChild variant="soft" size="sm">
                 <Link to="/purchases">
-                  <ShoppingBag /> My Purchases
+                  <ShoppingBag /> {t("myPurchases")}
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" aria-label="Sign out" onClick={signOut}>
+              <Button variant="ghost" size="icon" aria-label={t("signOut")} onClick={signOut}>
                 <LogOut />
               </Button>
             </>
           ) : (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link to="/auth">Sign In</Link>
+                <Link to="/auth">{t("signIn")}</Link>
               </Button>
               <Button asChild variant="hero" size="sm">
                 <Link to="/auth" search={{ mode: "signup" }}>
-                  Get Started
+                  {t("getStarted")}
                 </Link>
               </Button>
             </>
@@ -112,32 +116,33 @@ export function Header() {
                 onClick={() => setOpen(false)}
                 className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent"
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2">
+              <LanguageSelector compact />
               {user ? (
                 <>
                   {isAdmin ? (
                     <Button asChild variant="outline" onClick={() => setOpen(false)}>
-                      <Link to="/admin">Admin dashboard</Link>
+                      <Link to="/admin">{t("admin")} dashboard</Link>
                     </Button>
                   ) : null}
                   <Button asChild variant="soft" onClick={() => setOpen(false)}>
-                    <Link to="/purchases">My Purchases</Link>
+                    <Link to="/purchases">{t("myPurchases")}</Link>
                   </Button>
                   <Button variant="ghost" onClick={signOut}>
-                    Sign out
+                    {t("signOut")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button asChild variant="outline" onClick={() => setOpen(false)}>
-                    <Link to="/auth">Sign In</Link>
+                    <Link to="/auth">{t("signIn")}</Link>
                   </Button>
                   <Button asChild variant="hero" onClick={() => setOpen(false)}>
                     <Link to="/auth" search={{ mode: "signup" }}>
-                      Get Started
+                      {t("getStarted")}
                     </Link>
                   </Button>
                 </>
