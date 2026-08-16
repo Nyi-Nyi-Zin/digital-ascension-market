@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +48,6 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [checkEmail, setCheckEmail] = useState(false);
 
   const destination = search.redirect?.startsWith("/") ? search.redirect : "/products";
 
@@ -95,8 +94,9 @@ function AuthPage() {
         });
         if (error) throw error;
         if (!data.session) {
-          setCheckEmail(true);
-          return;
+          throw new Error(
+            "Email confirmation is still enabled in Supabase. Disable Confirm email in Authentication settings and try again.",
+          );
         }
         toast.success("Welcome to Cloud Nine!");
       } else {
@@ -121,131 +121,110 @@ function AuthPage() {
       </Link>
 
       <div className="glass w-full max-w-md rounded-3xl p-8">
-        {checkEmail ? (
-          <div className="text-center">
-            <span className="gradient-brand mx-auto flex size-14 items-center justify-center rounded-full shadow-glow">
-              <Mail className="size-6 text-primary-foreground" />
-            </span>
-            <h1 className="mt-5 text-xl font-bold">Confirm your email</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              We sent a confirmation link to <strong>{email}</strong>. Click it to activate your
-              Cloud Nine account, then sign in.
-            </p>
-            <Button
-              variant="outline"
-              className="mt-6 w-full"
-              onClick={() => {
-                setCheckEmail(false);
-                setMode("signin");
-              }}
-            >
-              Back to sign in
-            </Button>
-          </div>
-        ) : (
-          <>
-            <h1 className="text-2xl font-bold">
-              {mode === "signin" ? "Welcome back" : "Create your account"}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {mode === "signin"
-                ? "Sign in to track orders and view your credentials."
-                : "Start buying digital products with local payment methods."}
-            </p>
+        <h1 className="text-2xl font-bold">
+          {mode === "signin" ? "Welcome back" : "Create your account"}
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {mode === "signin"
+            ? "Sign in to track orders and view your credentials."
+            : "Start buying digital products with local payment methods."}
+        </p>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              className="mt-7 w-full rounded-full"
-              disabled={busy}
-              onClick={signInWithGoogle}
-            >
-              <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="#4285F4"
-                  d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.63h6.46a5.53 5.53 0 0 1-2.4 3.63v3.02h3.88c2.27-2.09 3.58-5.17 3.58-8.83Z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.96-1.08 7.94-2.9l-3.88-3.02c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.95H1.28v3.11A12 12 0 0 0 12 24Z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.29 14.28a7.2 7.2 0 0 1 0-4.56V6.61H1.28a12 12 0 0 0 0 10.78l4.01-3.11Z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.61l4.01 3.11C6.23 6.86 8.88 4.75 12 4.75Z"
-                />
-              </svg>
-              Continue with Google
-            </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="mt-7 w-full rounded-full"
+          disabled={busy}
+          onClick={signInWithGoogle}
+        >
+          <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#4285F4"
+              d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.63h6.46a5.53 5.53 0 0 1-2.4 3.63v3.02h3.88c2.27-2.09 3.58-5.17 3.58-8.83Z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 24c3.24 0 5.96-1.08 7.94-2.9l-3.88-3.02c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.95H1.28v3.11A12 12 0 0 0 12 24Z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.29 14.28a7.2 7.2 0 0 1 0-4.56V6.61H1.28a12 12 0 0 0 0 10.78l4.01-3.11Z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.61l4.01 3.11C6.23 6.86 8.88 4.75 12 4.75Z"
+            />
+          </svg>
+          Continue with Google
+        </Button>
 
-            <div className="my-5 flex items-center gap-3 text-xs text-subtle">
-              <span className="h-px flex-1 bg-border" />
-              or
-              <span className="h-px flex-1 bg-border" />
+        <div className="my-5 flex items-center gap-3 text-xs text-subtle">
+          <span className="h-px flex-1 bg-border" />
+          or
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <form onSubmit={submit} className="space-y-4">
+          {mode === "signup" ? (
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full name</Label>
+              <Input
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Aung Aung"
+                maxLength={100}
+                className="rounded-full"
+              />
             </div>
-
-            <form onSubmit={submit} className="space-y-4">
-              {mode === "signup" ? (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full name</Label>
-                  <Input
-                    id="fullName"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Aung Aung"
-                    maxLength={100}
-                    className="rounded-full"
-                  />
-                </div>
-              ) : null}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  maxLength={255}
-                  className="rounded-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  maxLength={72}
-                  className="rounded-full"
-                />
-              </div>
-              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="animate-spin" /> : null}
-                {mode === "signin" ? "Sign In" : "Create account"}
-              </Button>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              {mode === "signin" ? "New to Cloud Nine?" : "Already have an account?"}{" "}
-              <button
-                type="button"
-                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-                className="font-semibold text-primary hover:text-primary-dark"
-              >
-                {mode === "signin" ? "Create an account" : "Sign in"}
-              </button>
+          ) : null}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              maxLength={255}
+              className="rounded-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              minLength={6}
+              maxLength={72}
+              className="rounded-full"
+            />
+            <p className="text-xs text-subtle">
+              At least 6 characters. Special characters are optional.
             </p>
-          </>
-        )}
+          </div>
+          <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
+            {busy ? <Loader2 className="animate-spin" /> : null}
+            {mode === "signin" ? "Sign In" : "Create account"}
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {mode === "signin" ? "New to Cloud Nine?" : "Already have an account?"}{" "}
+          <button
+            type="button"
+            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            className="font-semibold text-primary hover:text-primary-dark"
+          >
+            {mode === "signin" ? "Create an account" : "Sign in"}
+          </button>
+        </p>
       </div>
 
       <Link to="/" className="mt-8 text-xs text-subtle hover:text-primary">
