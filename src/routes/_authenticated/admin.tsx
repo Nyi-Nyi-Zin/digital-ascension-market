@@ -7,6 +7,7 @@ import {
   ShieldAlert,
   Users,
   WalletCards,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Header";
@@ -21,6 +22,7 @@ const LINKS = [
   { to: "/admin/products", label: "Products", icon: Package, exact: false },
   { to: "/admin/orders", label: "Orders", icon: Receipt, exact: false },
   { to: "/admin/units", label: "Unit top-ups", icon: WalletCards, exact: false },
+  { to: "/admin/analytics", label: "SEO & Analytics", icon: BarChart3, exact: false },
   { to: "/admin/customers", label: "Customers", icon: Users, exact: false },
 ] as const;
 
