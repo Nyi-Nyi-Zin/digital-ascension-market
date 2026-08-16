@@ -189,7 +189,9 @@ function Index() {
               categoryName={
                 categories.find((category) => category.id === product.category_id)?.name
               }
-              stock={stock[product.id] ?? previewStockCount(product.id)}
+              stock={
+                (stock[product.id] ?? 0) > 0 ? stock[product.id] : previewStockCount(product.id)
+              }
               preview={(stock[product.id] ?? 0) === 0}
             />
           ))}
