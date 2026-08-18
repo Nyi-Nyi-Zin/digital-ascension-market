@@ -1,0 +1,17 @@
+{
+  "name": "Cloud Nine Digital Marketplace",
+  "short_name": "Cloud Nine",
+  "description": "Myanmar-focused digital subscriptions, design tools, virtual cards, and streaming accounts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07131c",
+  "theme_color": "#0b1724",
+  "icons": [
+    {
+      "src": "/assets/cloud-nine-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

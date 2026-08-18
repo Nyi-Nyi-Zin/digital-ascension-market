@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Wordmark } from "@/components/site/Header";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { trackActivity } from "@/lib/analytics";
 
 const searchSchema = {
   parse: (value: Record<string, unknown>) => ({
@@ -54,6 +55,7 @@ function OAuthCallbackPage() {
         return;
       }
 
+      void trackActivity("signed_in", "/auth/callback", data.session.user.id, { method: "google" });
       navigate({ to: destination, replace: true });
     }
 
@@ -61,7 +63,7 @@ function OAuthCallbackPage() {
     return () => {
       active = false;
     };
-  }, [destination, navigate, search.code, search.error, search.error_description]);
+  }, [destination, navigate, search.code, search.error, search.error_description, t]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-14">
@@ -79,9 +81,7 @@ function OAuthCallbackPage() {
           <>
             <Loader2 className="mx-auto size-7 animate-spin text-primary" />
             <h1 className="mt-4 text-2xl font-bold">{t("signIn")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t("securePayment")}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">{t("securePayment")}</p>
           </>
         )}
       </div>

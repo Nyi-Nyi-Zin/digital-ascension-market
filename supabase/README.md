@@ -1,10 +1,11 @@
 # Cloud Nine Supabase setup
 
-The application expects a Supabase project with the schema and RPC functions defined in `migrations/20260816000000_marketplace.sql`, `migrations/20260816010000_units_wallet.sql`, and `migrations/20260817000000_analytics.sql`.
+The application expects a Supabase project with the schema and RPC functions defined in `migrations/20260816000000_marketplace.sql`, `migrations/20260816010000_units_wallet.sql`, `migrations/20260817000000_analytics.sql`, and `migrations/20260819000000_activity_security.sql`.
 
 ## Apply the setup
 
-Run `20260816000000_marketplace.sql` first, then `20260816010000_units_wallet.sql`, then `20260817000000_analytics.sql` in the Supabase SQL Editor. After that, run `seed.sql` to create the four categories and twenty safe catalogue products. The seed file intentionally does **not** insert credentials, stock items, Auth passwords, or payment secrets. After creating an admin user, run `admin_setup.sql` to assign the `admin` role, then add real stock through **Admin → Products → Stock**.
+Run `20260816000000_marketplace.sql` first, then `20260816010000_units_wallet.sql`, then `20260817000000_analytics.sql`, and finally `20260819000000_activity_security.sql` in the Supabase SQL Editor.
+ After that, run `seed.sql` to create the four categories and twenty safe catalogue products. The seed file intentionally does **not** insert credentials, stock items, Auth passwords, or payment secrets. After creating an admin user, run `admin_setup.sql` to assign the `admin` role, then add real stock through **Admin → Products → Stock**.
 
 The application requires these client-side variables in `.env`:
 
@@ -25,7 +26,12 @@ The app uses Supabase Auth with Google OAuth and completes the flow at `/auth/ca
 
 ## Analytics setup
 
-Run `20260817000000_analytics.sql` to create the privacy-safe `page_views` table. The public site records only a random anonymous session UUID, public path, coarse device type, sanitized referrer origin, and timestamp. It never records account, checkout, wallet, admin, or payment pages. Only users with the `admin` role can read analytics rows. The dashboard is available at **Admin → SEO & Analytics** and includes pageviews, unique visitors, top public pages, referrers, device mix, trends, sitemap/robots health, and a Search Console connection status placeholder. Google Search Console clicks and impressions require a separate verified Search Console property and API integration.
+Run `20260817000000_analytics.sql` to create the privacy-safe `page_views` table. The public site records only a random anonymous session UUID, public path, coarse device type, sanitized referrer origin, and timestamp. It never records account, checkout, wallet, admin, or payment pages. Only users with the `admin` role can read analytics rows. The dashboard is available at **Admin → SEO & Analytics** and includes pageviews, unique visitors, top public pages, referrers, device mix, trends, sitemap/robots health, and a Search Console connection status placeholder. **Admin → User activity** shows privacy-safe user events, profile associations, filters, session/user counts, and a database-backed audit trail for order and unit-top-up status changes.
+ Google Search Console clicks and impressions require a separate verified Search Console property and API integration.
+
+## Security and activity settings
+
+The final migration adds browser security headers through `vercel.json`, explicit noindex metadata for private routes, privacy-safe `activity_events`, and admin-only `admin_audit_log` rows written by database triggers. Activity events never include transaction notes, screenshots, credentials, passwords, or payment amounts. The migration also protects the `admin_stats` RPC with an internal admin-role check and aligns the database payment-method constraints with KBZPay, WavePay, AyaPay, UAB Pay, and legacy bank/unit values.
 
 ## Theme and payment settings
 

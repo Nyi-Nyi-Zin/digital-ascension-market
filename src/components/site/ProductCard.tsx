@@ -77,7 +77,10 @@ export function ProductCard({
           <img
             src={product.image_url}
             alt={product.name}
+            width={800}
+            height={485}
             loading="lazy"
+            decoding="async"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

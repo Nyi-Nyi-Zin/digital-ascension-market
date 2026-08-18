@@ -34,9 +34,7 @@ function NotFoundComponent() {
       <div className="glass max-w-md rounded-3xl p-10 text-center">
         <h1 className="gradient-text text-7xl font-bold">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">{t("pageNotFound")}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("somethingWentWrong")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("somethingWentWrong")}</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -64,9 +62,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {t("thisPageDidntLoad")}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("somethingWentWrong")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("somethingWentWrong")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -98,6 +94,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: SITE_DESCRIPTION },
       { name: "robots", content: "index, follow, max-image-preview:large" },
       { name: "theme-color", content: "#0b1724" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
       { property: "og:title", content: `${SITE_NAME} — Digital Products Marketplace in Myanmar` },
       { property: "og:description", content: SITE_DESCRIPTION },
       { property: "og:type", content: "website" },
@@ -115,6 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "canonical", href: absoluteUrl("/") },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/assets/cloud-nine-logo.png", type: "image/png" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

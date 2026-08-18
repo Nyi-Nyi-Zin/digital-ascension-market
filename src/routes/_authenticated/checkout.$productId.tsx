@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice, productQuery, stockCountsQuery } from "@/lib/marketplace";
 import { walletBalanceQuery } from "@/lib/wallet";
+import { trackActivity } from "@/lib/analytics";
 
 export const Route = createFileRoute("/_authenticated/checkout/$productId")({
   component: CheckoutPage,
@@ -30,12 +31,12 @@ function CheckoutPage() {
 
   async function confirmOrder() {
     if (!product) return;
+    void trackActivity("checkout_attempt", `/checkout/${product.id}`, user?.id, {
+      product_id: product.id,
+    });
     setBusy(true);
     await new Promise((resolve) => window.setTimeout(resolve, 250));
-    toast.error(
-              available > 0 ? t("somethingWentWrong") : t("stockUnavailable"),
-
-    );
+    toast.error(available > 0 ? t("somethingWentWrong") : t("stockUnavailable"));
     setBusy(false);
   }
 
@@ -74,9 +75,7 @@ function CheckoutPage() {
         </Link>
 
         <h1 className="mt-6 text-3xl font-extrabold">{t("checkoutWithUnits")}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("temporaryPurchaseMode")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("temporaryPurchaseMode")}</p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.85fr]">
           <section className="glass rounded-3xl p-7">
@@ -88,7 +87,9 @@ function CheckoutPage() {
                 <p className="text-xs font-bold tracking-widest text-subtle uppercase">
                   {t("balance")}
                 </p>
-                <p className="mt-1 text-2xl font-extrabold">{balance.toFixed(2)} {t("units")}</p>
+                <p className="mt-1 text-2xl font-extrabold">
+                  {balance.toFixed(2)} {t("units")}
+                </p>
               </div>
             </div>
 
@@ -105,9 +106,7 @@ function CheckoutPage() {
             ) : (
               <div className="mt-7 rounded-2xl bg-lavender-light/70 p-5 text-sm">
                 <p className="font-semibold">{t("purchaseTemporarilyUnavailable")}</p>
-                <p className="mt-2 text-muted-foreground">
-                  {t("temporaryPurchaseMode")}
-                </p>
+                <p className="mt-2 text-muted-foreground">{t("temporaryPurchaseMode")}</p>
               </div>
             )}
 
@@ -122,7 +121,9 @@ function CheckoutPage() {
               {t("orderSummary")}
             </h2>
             <p className="mt-4 text-base font-semibold">{product.name}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{available} {t("inStock")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {available} {t("inStock")}
+            </p>
 
             <dl className="mt-6 space-y-3 border-t border-border pt-5 text-sm">
               <div className="flex justify-between">
@@ -149,9 +150,7 @@ function CheckoutPage() {
               {busy ? <Loader2 className="animate-spin" /> : null}
               {busy ? t("checkingAvailability") : t("tryPurchase")}
             </Button>
-            <p className="mt-3 text-center text-xs text-subtle">
-              {t("temporaryPurchaseMode")}
-            </p>
+            <p className="mt-3 text-center text-xs text-subtle">{t("temporaryPurchaseMode")}</p>
           </aside>
         </div>
       </div>

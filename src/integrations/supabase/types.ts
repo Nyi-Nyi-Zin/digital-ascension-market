@@ -59,6 +59,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      activity_events: {
+        Row: {
+          created_at: string;
+          event_name: string;
+          id: string;
+          metadata: Json;
+          path: string;
+          session_id: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          event_name: string;
+          id?: string;
+          metadata?: Json;
+          path: string;
+          session_id: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          event_name?: string;
+          id?: string;
+          metadata?: Json;
+          path?: string;
+          session_id?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      admin_audit_log: {
+        Row: {
+          action: string;
+          actor_user_id: string | null;
+          created_at: string;
+          entity_id: string | null;
+          entity_type: string;
+          id: string;
+          metadata: Json;
+          target_user_id: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_user_id?: string | null;
+          created_at?: string;
+          entity_id?: string | null;
+          entity_type: string;
+          id?: string;
+          metadata?: Json;
+          target_user_id?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_user_id?: string | null;
+          created_at?: string;
+          entity_id?: string | null;
+          entity_type?: string;
+          id?: string;
+          metadata?: Json;
+          target_user_id?: string | null;
+        };
+        Relationships: [];
+      };
       unit_balances: {
         Row: {
           balance: number;

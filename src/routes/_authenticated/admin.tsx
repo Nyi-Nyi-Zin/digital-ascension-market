@@ -8,6 +8,7 @@ import {
   Users,
   WalletCards,
   BarChart3,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Header";
@@ -24,6 +25,7 @@ const LINKS = [
   { to: "/admin/orders", label: "Orders", icon: Receipt, exact: false },
   { to: "/admin/units", label: "Unit top-ups", icon: WalletCards, exact: false },
   { to: "/admin/analytics", label: "SEO & Analytics", icon: BarChart3, exact: false },
+  { to: "/admin/activity", label: "User activity", icon: Activity, exact: false },
   { to: "/admin/customers", label: "Customers", icon: Users, exact: false },
 ] as const;
 
@@ -47,9 +49,7 @@ function AdminLayout() {
             <ShieldAlert className="size-6 text-destructive" />
           </span>
           <h1 className="mt-5 text-xl font-bold">{t("adminOnly")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t("adminOnlyDescription")}
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("adminOnlyDescription")}</p>
           <Button asChild variant="hero" className="mt-6">
             <Link to="/products">{t("backToStore")}</Link>
           </Button>

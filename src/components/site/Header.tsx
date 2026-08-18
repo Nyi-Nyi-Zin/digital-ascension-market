@@ -18,6 +18,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/site/LanguageSelector";
 import { walletBalanceQuery } from "@/lib/wallet";
 import { useTheme } from "@/lib/theme";
+import { trackActivity } from "@/lib/analytics";
 
 const NAV = [
   { to: "/products", key: "products" },
@@ -48,6 +49,7 @@ export function Header() {
   const queryClient = useQueryClient();
 
   async function signOut() {
+    void trackActivity("signed_out", "/auth", user?.id);
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
@@ -96,8 +98,7 @@ export function Header() {
               ) : null}
               <Button asChild variant="outline" size="sm">
                 <Link to="/units">
-                                        <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
-
+                  <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
                 </Link>
               </Button>
               <Button asChild variant="soft" size="sm">
@@ -162,7 +163,7 @@ export function Header() {
                   ) : null}
                   <Button asChild variant="outline" onClick={() => setOpen(false)}>
                     <Link to="/units">
-                    <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
+                      <WalletCards /> {Number(wallet?.balance ?? 0).toFixed(2)} {t("units")}
                     </Link>
                   </Button>
                   <Button asChild variant="soft" onClick={() => setOpen(false)}>

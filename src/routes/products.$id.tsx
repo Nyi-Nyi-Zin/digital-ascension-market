@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { ArrowLeft, Check, Package, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site/SiteLayout";
@@ -16,6 +17,7 @@ import { useAuth } from "@/lib/auth";
 import { walletBalanceQuery } from "@/lib/wallet";
 import { useI18n } from "@/lib/i18n";
 import { absoluteUrl, productJsonLd } from "@/lib/seo";
+import { trackActivity } from "@/lib/analytics";
 
 export const Route = createFileRoute("/products/$id")({
   loader: async ({ context, params }) => {
@@ -86,6 +88,14 @@ function ProductDetail() {
   const { data: stock } = useSuspenseQuery(stockCountsQuery);
   const { data: wallet, isLoading: walletLoading } = useQuery(walletBalanceQuery(user?.id));
 
+  useEffect(() => {
+    if (product) {
+      void trackActivity("product_view", `/products/${product.id}`, user?.id, {
+        product_id: product.id,
+      });
+    }
+  }, [product, user?.id]);
+
   if (!product) return null;
   const realAvailable = stock[product.id] ?? 0;
   const available = realAvailable > 0 ? realAvailable : previewStockCount(product.id);
@@ -110,6 +120,9 @@ function ProductDetail() {
                 <img
                   src={product.image_url}
                   alt={product.name}
+                  width={64}
+                  height={64}
+                  decoding="async"
                   className="size-16 rounded-2xl object-cover"
                 />
               ) : (
@@ -156,16 +169,18 @@ function ProductDetail() {
               {t("balance")}: {walletLoading ? "…" : `${balance.toFixed(2)} ${t("units")}`}
             </p>
             {!walletLoading && !canAfford ? (
-              <p className="mt-2 text-sm font-semibold text-amber-600">{t("insufficientBalance")}</p>
+              <p className="mt-2 text-sm font-semibold text-amber-600">
+                {t("insufficientBalance")}
+              </p>
             ) : null}
-            <p className="mt-2 text-xs text-muted-foreground">
-              {t("publicBrowseNotice")}
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{t("publicBrowseNotice")}</p>
 
             <div className="mt-6 flex items-center gap-2 text-sm">
               <Package className="size-4 text-primary" />
               <span className="font-semibold text-muted-foreground">
-                {realAvailable > 0 ? `${available} ${t("inStock")}` : `${available} ${t("previewCount")}`}
+                {realAvailable > 0
+                  ? `${available} ${t("inStock")}`
+                  : `${available} ${t("previewCount")}`}
               </span>
             </div>
 

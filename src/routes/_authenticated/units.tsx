@@ -12,6 +12,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
+import { trackActivity } from "@/lib/analytics";
 import { formatPrice, PAYMENT_METHODS } from "@/lib/marketplace";
 import {
   formatMMK,
@@ -90,6 +91,7 @@ function UnitsPage() {
 
       setNote("");
       setFile(null);
+      void trackActivity("topup_submitted", "/units", user.id, { payment_method: method });
       toast.success(t("unitTopupSubmitted"));
       await queryClient.invalidateQueries({ queryKey: ["unit-topups", user.id] });
     } catch (error) {
@@ -110,9 +112,7 @@ function UnitsPage() {
             >
               ← {t("products")}
             </Link>
-            <h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">
-              {t("unitsToBuy")}
-            </h1>
+            <h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">{t("unitsToBuy")}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               {t("productPricesInUsd")}
             </p>
@@ -138,9 +138,7 @@ function UnitsPage() {
               </h2>
               <div className="mt-4 rounded-2xl bg-lavender-light/70 p-5">
                 <p className="text-2xl font-extrabold">1 USD = {formatMMK(UNIT_MMK_RATE)}</p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("productPricesInUsd")}
-                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{t("productPricesInUsd")}</p>
               </div>
               <div className="mt-6 space-y-2">
                 <Label htmlFor="units">{t("unitsToBuy")}</Label>
@@ -203,7 +201,9 @@ function UnitsPage() {
               </div>
               <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4">
                 <p className="text-sm font-bold">{t("submitPaymentProof")}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t("afterTransferInstruction")}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {t("afterTransferInstruction")}
+                </p>
               </div>
               <div className="mt-5 space-y-4">
                 <div className="space-y-2">
@@ -244,9 +244,7 @@ function UnitsPage() {
               >
                 {busy ? <Loader2 className="animate-spin" /> : null} {t("submitPaymentProof")}
               </Button>
-              <p className="mt-3 text-center text-xs text-subtle">
-                {t("pendingVerification")}
-              </p>
+              <p className="mt-3 text-center text-xs text-subtle">{t("pendingVerification")}</p>
             </section>
           </div>
 
@@ -259,9 +257,7 @@ function UnitsPage() {
                 <Loader2 className="size-5 animate-spin text-primary" />
               </div>
             ) : (topups?.length ?? 0) === 0 ? (
-              <p className="mt-5 text-sm text-muted-foreground">
-                {t("noTopups")}
-              </p>
+              <p className="mt-5 text-sm text-muted-foreground">{t("noTopups")}</p>
             ) : (
               <div className="mt-5 space-y-3">
                 {topups?.map((topup) => (

@@ -37,6 +37,7 @@ export function productJsonLd(product: {
   description: string;
   price: number | string;
   imageUrl?: string | null;
+  availability?: "InStock" | "OutOfStock" | "PreOrder";
 }) {
   return {
     "@context": "https://schema.org",
@@ -50,7 +51,7 @@ export function productJsonLd(product: {
       "@type": "Offer",
       priceCurrency: "USD",
       price: Number(product.price).toFixed(2),
-      availability: "https://schema.org/InStock",
+      availability: `https://schema.org/${product.availability ?? "PreOrder"}`,
       url: absoluteUrl(`/products/${product.id}`),
       seller: { "@type": "Organization", name: SITE_NAME },
     },
